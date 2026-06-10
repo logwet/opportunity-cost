@@ -1,9 +1,12 @@
-const CACHE = 'opportunity-cost-v3';
+const CACHE = 'opportunity-cost-v4';
 
 const PRECACHE = [
     './',
     './index.html',
-    './manifest.webmanifest'
+    './manifest.webmanifest',
+    './icons/icon.svg',
+    './icons/icon-192.png',
+    './icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {

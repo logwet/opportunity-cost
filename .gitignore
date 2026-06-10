@@ -7,6 +7,9 @@
 # macOS thumbnails
 Thumbs.db
 
+# Python
+.venv/
+
 # IDE / editors
 .idea/
 *.iml
