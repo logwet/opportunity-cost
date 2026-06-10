@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-title" content="Opportunity Cost">
+<link
+    rel="icon"
+    type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23007AFF'/%3E%3Cpath d='M32 118 L68 88 L98 98 L148 48' fill='none' stroke='%23fff' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ctext x='90' y='152' text-anchor='middle' fill='%23fff' font-family='system-ui,-apple-system,sans-serif' font-size='40' font-weight='700'%3E%24%3C/text%3E%3C/svg%3E"
+>
+<link
+    rel="apple-touch-icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23007AFF'/%3E%3Cpath d='M32 118 L68 88 L98 98 L148 48' fill='none' stroke='%23fff' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ctext x='90' y='152' text-anchor='middle' fill='%23fff' font-family='system-ui,-apple-system,sans-serif' font-size='40' font-weight='700'%3E%24%3C/text%3E%3C/svg%3E"
+>
+<link rel="manifest" href="./manifest.webmanifest">
+
+<title>Opportunity Cost</title>
+
+<style>
+:root {
+    color-scheme: light dark;
+    --bg: #f2f2f7;
+    --card: #ffffff;
+    --text: #000000;
+    --secondary: #6e6e73;
+    --accent: #007aff;
+    --shadow: rgba(0,0,0,0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #000000;
+        --card: #1c1c1e;
+        --text: #ffffff;
+        --secondary: #98989d;
+        --accent: #0a84ff;
+        --shadow: rgba(255,255,255,0.05);
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--bg);
+}
+
+body {
+    margin: 0;
+    padding:
+        max(24px, env(safe-area-inset-top))
+        20px
+        max(24px, env(safe-area-inset-bottom))
+        20px;
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        sans-serif;
+}
+
+h1 {
+    margin: 0 0 24px;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    color: var(--secondary);
+    margin-bottom: 8px;
+}
+
+input[type="number"] {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 28px;
+    background: var(--bg);
+    color: var(--text);
+}
+
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="text"]:focus {
+    outline: 2px solid var(--accent);
+}
+
+input[type="search"],
+input[type="text"] {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-size: 16px;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.search-input {
+    margin-bottom: 12px;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.small-input {
+    font-size: 18px !important;
+}
+
+.age-row {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.age-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.mode-toggle {
+    flex: 1;
+    min-width: 0;
+}
+
+.segmented-control {
+    display: flex;
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 4px;
+}
+
+.segmented-control button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--secondary);
+    padding: 12px 8px;
+    font-size: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.segmented-control button.active {
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+}
+
+.quick-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.quick-buttons button,
+.primary-button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: var(--accent);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 18px;
+}
+
+.result-row:not(:last-child) {
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+}
+
+.big-number {
+    text-align: center;
+}
+
+.big-number .label {
+    color: var(--secondary);
+    font-size: 14px;
+}
+
+.big-number .value {
+    font-size: 42px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.log-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.log-item:not(:last-child) {
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+}
+
+.log-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.log-description {
+    font-weight: 600;
+}
+
+.delete-button {
+    border: none;
+    background: none;
+    color: #ff3b30;
+    font-size: 15px;
+    padding: 8px 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.log-value {
+    color: var(--secondary);
+    margin-top: 4px;
+}
+
+.log-date {
+    color: var(--secondary);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+}
+
+.row input {
+    flex: 1;
+}
+
+.empty {
+    color: var(--secondary);
+}
+
+.chart-container {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(128,128,128,0.15);
+}
+
+.growth-chart {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.reset-button {
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: #ff3b30;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>Opportunity Cost</h1>
+
+<div class="card">
+    <label>Purchase Price ($)</label>
+    <input id="amount" type="number" value="100" min="0" step="0.01">
+
+    <div class="quick-buttons">
+        <button onclick="addAmount(5)">+$5</button>
+        <button onclick="addAmount(10)">+$10</button>
+        <button onclick="addAmount(20)">+$20</button>
+        <button onclick="addAmount(50)">+$50</button>
+        <button onclick="addAmount(100)">+$100</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="settings-grid">
+        <div>
+            <label>Annual Return (%)</label>
+            <input id="returnRate" class="small-input" type="number" value="9" step="0.1">
+        </div>
+
+        <div>
+            <label>Inflation (%)</label>
+            <input id="inflationRate" class="small-input" type="number" value="3">
+        </div>
+
+        <div class="age-row">
+            <div class="age-input">
+                <label>Current Age</label>
+                <input id="currentAge" class="small-input" type="number" value="23">
+            </div>
+
+            <div class="mode-toggle">
+                <label>Return Type</label>
+                <div class="segmented-control">
+                    <button id="modeInvest" type="button" class="active">
+                        Invest
+                    </button>
+                    <button id="modeSave" type="button">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="big-number">
+        <div class="label">Worth At Retirement (Age 65)</div>
+        <div id="retirementValue" class="value">$0</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="result-row">
+        <span>5 Years</span>
+        <strong id="y5"></strong>
+    </div>
+
+    <div class="result-row">
+        <span>10 Years</span>
+        <strong id="y10"></strong>
+    </div>
+
+    <div class="result-row">
+        <span>20 Years</span>
+        <strong id="y20"></strong>
+    </div>
+
+    <div class="result-row">
+        <span>30 Years</span>
+        <strong id="y30"></strong>
+    </div>
+
+    <div class="result-row">
+        <span>50 Years</span>
+        <strong id="y50"></strong>
+    </div>
+
+    <div class="chart-container">
+        <svg
+            id="growthChart"
+            class="growth-chart"
+            role="img"
+            aria-label="Expected value over time"
+        ></svg>
+    </div>
+</div>
+
+<div class="card">
+    <label>Purchase Description (Optional)</label>
+
+    <div class="row">
+        <input id="description" type="text" placeholder="Headphones">
+        <button class="primary-button" onclick="savePurchase()">
+            Save
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <label>Avoided Purchases</label>
+    <input
+        id="logSearch"
+        class="search-input"
+        type="search"
+        placeholder="Search by name or date"
+        autocomplete="off"
+        enterkeyhint="search"
+    >
+    <div id="purchaseLog" class="empty">
+        No saved purchases.
+    </div>
+</div>
+
+<button
+    id="resetButton"
+    class="reset-button"
+    type="button"
+    onclick="resetAppData()"
+>
+    Reset All Data
+</button>
+
+<script>
+const RETIREMENT_AGE = 65;
+const USER_BIRTH_DATE = new Date(2000, 0, 1);
+const DEFAULT_INVEST_RETURN = 9;
+const DEFAULT_SAVE_RETURN = 3.2;
+
+let returnMode = 'invest';
+
+function applyTheme() {
+    const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    document.documentElement.style.colorScheme =
+        dark ? 'dark' : 'light';
+
+    document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute('content', dark ? '#000000' : '#f2f2f7');
+
+    document
+        .querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
+        .setAttribute(
+            'content',
+            dark ? 'black-translucent' : 'default'
+        );
+}
+
+applyTheme();
+
+window
+    .matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', applyTheme);
+
+function calculateAge(birthDate, asOf = new Date()) {
+    let age = asOf.getFullYear() - birthDate.getFullYear();
+    const monthDiff = asOf.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && asOf.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
+}
+
+function currency(v) {
+    return new Intl.NumberFormat(
+        'en-AU',
+        {
+            style: 'currency',
+            currency: 'AUD',
+            maximumFractionDigits: 0
+        }
+    ).format(v);
+}
+
+function futureValue(pv, rate, inflation, years) {
+    const realRate = (1 + rate) / (1 + inflation) - 1;
+
+    return pv * Math.pow(1 + realRate, years);
+}
+
+function compactCurrency(v) {
+    if (v >= 1000000) {
+        return '$' + (v / 1000000).toFixed(1) + 'M';
+    }
+
+    if (v >= 1000) {
+        const thousands = Math.floor(v / 100) / 10;
+        const label = Number.isInteger(thousands)
+            ? String(thousands)
+            : thousands.toFixed(1);
+
+        return '$' + label + 'k';
+    }
+
+    return '$' + Math.round(v);
+}
+
+function getChartMilestones(yearsToRetirement) {
+    const items = [
+        { years: 5, label: '5y' },
+        { years: 10, label: '10y' },
+        { years: 20, label: '20y' },
+        { years: 30, label: '30y' },
+        { years: 50, label: '50y' },
+        { years: yearsToRetirement, label: 'Ret.', highlight: true }
+    ];
+    const seen = new Set();
+
+    return items.filter(item => {
+        if (item.years <= 0 || seen.has(item.years)) {
+            return false;
+        }
+
+        seen.add(item.years);
+        return true;
+    });
+}
+
+function filterOverlappingMilestones(
+    milestones,
+    amount,
+    rate,
+    inflation,
+    y,
+    minLabelGap = 14
+) {
+    const withPositions = milestones.map(milestone => {
+        const value = futureValue(
+            amount,
+            rate,
+            inflation,
+            milestone.years
+        );
+
+        return {
+            ...milestone,
+            value,
+            cy: y(value)
+        };
+    });
+
+    withPositions.sort((a, b) => b.value - a.value);
+
+    const kept = [];
+
+    for (const milestone of withPositions) {
+        const overlaps = kept.some(
+            keptMilestone =>
+                Math.abs(keptMilestone.cy - milestone.cy) < minLabelGap
+        );
+
+        if (!overlaps) {
+            kept.push(milestone);
+        }
+    }
+
+    return kept;
+}
+
+function drawChart(amount, rate, inflation, yearsToRetirement) {
+    const svg = document.getElementById('growthChart');
+    const milestones = getChartMilestones(yearsToRetirement);
+    const maxYears = Math.max(50, yearsToRetirement, 1);
+    const values = [];
+
+    for (let year = 0; year <= maxYears; year++) {
+        values.push(futureValue(amount, rate, inflation, year));
+    }
+
+    const maxValue = Math.max(...values, 1);
+    const minValue = 0;
+    const width = 340;
+    const height = 200;
+    const pad = { top: 14, right: 12, bottom: 30, left: 48 };
+    const plotW = width - pad.left - pad.right;
+    const plotH = height - pad.top - pad.bottom;
+    const valueRange = maxValue - minValue || 1;
+
+    const x = years => pad.left + (years / maxYears) * plotW;
+    const y = value =>
+        pad.top + plotH - ((value - minValue) / valueRange) * plotH;
+
+    let linePath = '';
+
+    for (let year = 0; year <= maxYears; year++) {
+        const value = futureValue(amount, rate, inflation, year);
+        linePath += `${year === 0 ? 'M' : 'L'} ${x(year)} ${y(value)} `;
+    }
+
+    const areaPath =
+        `${linePath} L ${x(maxYears)} ${y(minValue)} L ${x(0)} ${y(minValue)} Z`;
+
+    const baseline = pad.top + plotH;
+
+    const visibleMilestones = filterOverlappingMilestones(
+        milestones,
+        amount,
+        rate,
+        inflation,
+        y
+    );
+
+    const milestoneMarkup = visibleMilestones.map(milestone => {
+        const value = milestone.value;
+        const cx = x(milestone.years);
+        const cy = milestone.cy;
+        const color = milestone.highlight
+            ? 'var(--accent)'
+            : 'var(--secondary)';
+        const opacity = milestone.highlight ? '1' : '0.7';
+        const strokeWidth = milestone.highlight ? '1.5' : '1';
+        const fontWeight = milestone.highlight ? '600' : '400';
+
+        return `
+            <line
+                x1="${cx}"
+                y1="${baseline}"
+                x2="${cx}"
+                y2="${cy}"
+                stroke="${color}"
+                stroke-width="${strokeWidth}"
+                stroke-dasharray="4 4"
+                opacity="${opacity}"
+            />
+            <line
+                x1="${pad.left}"
+                y1="${cy}"
+                x2="${cx}"
+                y2="${cy}"
+                stroke="${color}"
+                stroke-width="${strokeWidth}"
+                stroke-dasharray="4 4"
+                opacity="${opacity}"
+            />
+            <text
+                x="${pad.left - 6}"
+                y="${cy}"
+                text-anchor="end"
+                fill="${color}"
+                font-size="10"
+                font-weight="${fontWeight}"
+                dominant-baseline="middle"
+            >${compactCurrency(value)}</text>
+            <text
+                x="${cx}"
+                y="${height - 8}"
+                text-anchor="middle"
+                fill="${color}"
+                font-size="10"
+                font-weight="${fontWeight}"
+            >${milestone.label}</text>
+        `;
+    }).join('');
+
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.innerHTML = `
+        <line
+            x1="${pad.left}"
+            y1="${baseline}"
+            x2="${pad.left + plotW}"
+            y2="${baseline}"
+            stroke="var(--secondary)"
+            opacity="0.3"
+        />
+        <path
+            d="${areaPath}"
+            fill="var(--accent)"
+            opacity="0.12"
+        />
+        ${milestoneMarkup}
+        <path
+            d="${linePath}"
+            fill="none"
+            stroke="var(--accent)"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        />
+    `;
+}
+
+function calculate() {
+    const amount =
+        parseFloat(document.getElementById('amount').value) || 0;
+
+    const rate =
+        (parseFloat(document.getElementById('returnRate').value) || 0) / 100;
+
+    const inflation =
+        (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
+
+    const age =
+        parseFloat(document.getElementById('currentAge').value) ||
+        calculateAge(USER_BIRTH_DATE);
+
+    document.getElementById('y5').textContent =
+        currency(futureValue(amount, rate, inflation, 5));
+
+    document.getElementById('y10').textContent =
+        currency(futureValue(amount, rate, inflation, 10));
+
+    document.getElementById('y20').textContent =
+        currency(futureValue(amount, rate, inflation, 20));
+
+    document.getElementById('y30').textContent =
+        currency(futureValue(amount, rate, inflation, 30));
+
+    document.getElementById('y50').textContent =
+        currency(futureValue(amount, rate, inflation, 50));
+
+    const yearsToRetirement =
+        Math.max(0, RETIREMENT_AGE - age);
+
+    document.getElementById('retirementValue').textContent =
+        currency(
+            futureValue(
+                amount,
+                rate,
+                inflation,
+                yearsToRetirement
+            )
+        );
+
+    drawChart(amount, rate, inflation, yearsToRetirement);
+
+    saveSettings();
+}
+
+function addAmount(value) {
+    const input = document.getElementById('amount');
+    input.value =
+        (parseFloat(input.value) || 0) + value;
+
+    calculate();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
+function readSettings() {
+    const defaults = {
+        returnMode: 'invest',
+        investReturnRate: DEFAULT_INVEST_RETURN,
+        saveReturnRate: DEFAULT_SAVE_RETURN,
+        inflationRate: 3
+    };
+    const saved =
+        localStorage.getItem('opportunityCostSettings');
+
+    if (!saved) {
+        return { ...defaults };
+    }
+
+    const parsed = JSON.parse(saved);
+
+    return {
+        ...defaults,
+        ...parsed,
+        investReturnRate:
+            parsed.investReturnRate ??
+            parsed.returnRate ??
+            DEFAULT_INVEST_RETURN,
+        saveReturnRate:
+            parsed.saveReturnRate ?? DEFAULT_SAVE_RETURN
+    };
+}
+
+function writeSettings(updates) {
+    const settings = {
+        ...readSettings(),
+        ...updates
+    };
+
+    localStorage.setItem(
+        'opportunityCostSettings',
+        JSON.stringify(settings)
+    );
+
+    return settings;
+}
+
+function updateModeButtons() {
+    document
+        .getElementById('modeInvest')
+        .classList.toggle('active', returnMode === 'invest');
+
+    document
+        .getElementById('modeSave')
+        .classList.toggle('active', returnMode === 'save');
+}
+
+function setReturnMode(mode) {
+    const settings = readSettings();
+    const currentReturn =
+        document.getElementById('returnRate').value;
+
+    writeSettings({
+        returnMode: mode,
+        investReturnRate:
+            returnMode === 'invest'
+                ? currentReturn
+                : settings.investReturnRate,
+        saveReturnRate:
+            returnMode === 'save'
+                ? currentReturn
+                : settings.saveReturnRate
+    });
+
+    returnMode = mode;
+
+    const updated = readSettings();
+
+    document.getElementById('returnRate').value =
+        mode === 'invest'
+            ? updated.investReturnRate
+            : updated.saveReturnRate;
+
+    updateModeButtons();
+    calculate();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
+function saveSettings() {
+    const settings = readSettings();
+    const currentReturn =
+        document.getElementById('returnRate').value;
+
+    writeSettings({
+        returnMode,
+        investReturnRate:
+            returnMode === 'invest'
+                ? currentReturn
+                : settings.investReturnRate,
+        saveReturnRate:
+            returnMode === 'save'
+                ? currentReturn
+                : settings.saveReturnRate,
+        inflationRate:
+            document.getElementById('inflationRate').value
+    });
+}
+
+function loadSettings() {
+    const settings = readSettings();
+
+    returnMode = settings.returnMode;
+
+    document.getElementById('returnRate').value =
+        returnMode === 'invest'
+            ? settings.investReturnRate
+            : settings.saveReturnRate;
+
+    document.getElementById('inflationRate').value =
+        settings.inflationRate;
+
+    document.getElementById('currentAge').value =
+        calculateAge(USER_BIRTH_DATE);
+
+    updateModeButtons();
+}
+
+function getLog() {
+    return JSON.parse(
+        localStorage.getItem('purchaseLog') || '[]'
+    );
+}
+
+function savePurchase() {
+    const amount =
+        parseFloat(document.getElementById('amount').value);
+
+    if (!amount) return;
+
+    const description =
+        document.getElementById('description').value.trim() ||
+        'Unnamed Purchase';
+
+    const rate =
+        (parseFloat(document.getElementById('returnRate').value) || 0) / 100;
+
+    const inflation =
+        (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
+
+    const age =
+        parseFloat(document.getElementById('currentAge').value) ||
+        calculateAge(USER_BIRTH_DATE);
+
+    const retirementValue =
+        futureValue(
+            amount,
+            rate,
+            inflation,
+            RETIREMENT_AGE - age
+        );
+
+    const log = getLog();
+
+    log.unshift({
+        id: crypto.randomUUID(),
+        description,
+        amount,
+        retirementValue,
+        date: new Date().toISOString()
+    });
+
+    localStorage.setItem(
+        'purchaseLog',
+        JSON.stringify(log)
+    );
+
+    document.getElementById('description').value = '';
+
+    renderLog();
+}
+
+function itemId(item) {
+    return item.id ?? item.date;
+}
+
+function formatLogDate(isoDate) {
+    return new Intl.DateTimeFormat('en-AU', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+    }).format(new Date(isoDate));
+}
+
+function formatLogDateNumeric(isoDate) {
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+
+    return `${day}/${month}/${date.getFullYear()}`;
+}
+
+function matchesLogSearch(item, query) {
+    if (item.description.toLowerCase().includes(query)) {
+        return true;
+    }
+
+    if (!item.date) {
+        return false;
+    }
+
+    const date = new Date(item.date);
+    const searchable = [
+        formatLogDate(item.date),
+        formatLogDateNumeric(item.date),
+        new Intl.DateTimeFormat('en-AU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        }).format(date),
+        new Intl.DateTimeFormat('en-AU', {
+            month: 'short'
+        }).format(date),
+        new Intl.DateTimeFormat('en-AU', {
+            month: 'long'
+        }).format(date),
+        String(date.getFullYear()),
+        String(date.getDate()).padStart(2, '0'),
+        date.toISOString().slice(0, 10)
+    ].join(' ').toLowerCase();
+
+    return searchable.includes(query);
+}
+
+function resetAppData() {
+    const confirmed = confirm(
+        'This will permanently clear all saved data:\n\n' +
+        '• Annual return settings (Invest and Save)\n' +
+        '• Inflation rate\n' +
+        '• All avoided purchases\n\n' +
+        'Your current age will reset to today\'s calculated age.\n\n' +
+        'Are you sure?'
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    localStorage.removeItem('opportunityCostSettings');
+    localStorage.removeItem('purchaseLog');
+
+    returnMode = 'invest';
+    document.getElementById('amount').value = 100;
+    document.getElementById('description').value = '';
+    document.getElementById('logSearch').value = '';
+
+    loadSettings();
+    calculate();
+    renderLog();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
+function deletePurchase(id) {
+    const log = getLog().filter(item => itemId(item) !== id);
+
+    localStorage.setItem(
+        'purchaseLog',
+        JSON.stringify(log)
+    );
+
+    renderLog();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
+function renderLog() {
+    const container =
+        document.getElementById('purchaseLog');
+
+    const query =
+        document.getElementById('logSearch').value
+            .trim()
+            .toLowerCase();
+
+    const allItems = getLog();
+    const log = query
+        ? allItems.filter(item => matchesLogSearch(item, query))
+        : allItems;
+
+    if (!allItems.length) {
+        container.className = 'empty';
+        container.textContent =
+            'No saved purchases.';
+        return;
+    }
+
+    if (!log.length) {
+        container.className = 'empty';
+        container.textContent =
+            'No matching purchases.';
+        return;
+    }
+
+    container.className = '';
+
+    container.innerHTML =
+        log.map(item => `
+            <div class="log-item">
+                <div class="log-content">
+                    <div class="log-description">
+                        ${item.description}
+                    </div>
+                    <div class="log-value">
+                        ${currency(item.amount)}
+                        → ${currency(item.retirementValue)}
+                        at retirement
+                    </div>
+                    <div class="log-date">
+                        Added ${formatLogDate(item.date)}
+                    </div>
+                </div>
+                <button
+                    class="delete-button"
+                    type="button"
+                    data-delete-id="${itemId(item)}"
+                    aria-label="Delete ${item.description}"
+                >
+                    Delete
+                </button>
+            </div>
+        `).join('');
+}
+
+[
+    'amount',
+    'returnRate',
+    'inflationRate',
+    'currentAge'
+].forEach(id => {
+    document
+        .getElementById(id)
+        .addEventListener('input', calculate);
+});
+
+document
+    .getElementById('modeInvest')
+    .addEventListener('click', () => setReturnMode('invest'));
+
+document
+    .getElementById('modeSave')
+    .addEventListener('click', () => setReturnMode('save'));
+
+document
+    .getElementById('logSearch')
+    .addEventListener('input', renderLog);
+
+document
+    .getElementById('purchaseLog')
+    .addEventListener('click', event => {
+        const button = event.target.closest('[data-delete-id]');
+
+        if (button) {
+            deletePurchase(button.dataset.deleteId);
+        }
+    });
+
+loadSettings();
+calculate();
+renderLog();
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker
+            .register('./sw.js')
+            .catch(() => {});
+    });
+}
+</script>
+
+</body>
+</html>
