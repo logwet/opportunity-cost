@@ -188,13 +188,14 @@ input[type="text"] {
 
 .result-table {
     display: grid;
-    grid-template-columns: max-content 6.75rem 6.75rem;
+    grid-template-columns: auto 1fr 1fr;
     column-gap: 12px;
+    width: 100%;
     font-size: 18px;
 }
 
 .result-table.no-inflation {
-    grid-template-columns: max-content 6.75rem;
+    grid-template-columns: auto 1fr;
 }
 
 .result-row > :first-child {
@@ -239,6 +240,24 @@ input[type="text"] {
     color: var(--secondary);
     font-weight: 400;
     opacity: 0.85;
+}
+
+.opportunity-cost {
+    color: #ff3b30 !important;
+}
+
+.opportunity-cost-nominal {
+    color: #ff3b30;
+    opacity: 0.45;
+}
+
+.big-number .value-nominal.opportunity-cost-nominal {
+    color: #ff3b30;
+    opacity: 0.45;
+}
+
+.display-mode-control {
+    margin-bottom: 16px;
 }
 
 .big-number {
@@ -420,7 +439,7 @@ input[type="text"] {
 
 <div class="card">
     <label>Purchase Price ($)</label>
-    <input id="amount" type="number" value="100" min="0" step="0.01">
+    <input id="amount" type="number" value="100" min="0" step="1">
 
     <div class="quick-buttons">
         <button onclick="addAmount(5)">+$5</button>
@@ -465,8 +484,18 @@ input[type="text"] {
 </div>
 
 <div class="card">
+    <label>Display</label>
+    <div class="segmented-control display-mode-control">
+        <button id="modeOpportunityCost" type="button" class="active">
+            Opportunity Cost
+        </button>
+        <button id="modeWorth" type="button">
+            Worth
+        </button>
+    </div>
+
     <div class="big-number">
-        <div class="label">Worth At Retirement (Age 65)</div>
+        <div id="retirementTitle" class="label">Opportunity Cost At Retirement (Age 65)</div>
         <div id="retirementValues" class="big-number-values">
             <div class="big-number-nominal">
                 <div id="retirementNominalValue" class="value-nominal">$0</div>
@@ -572,6 +601,7 @@ const DEFAULT_INVEST_RETURN = 9;
 const DEFAULT_SAVE_RETURN = 3.2;
 
 let returnMode = 'invest';
+let displayMode = 'opportunity';
 
 function applyTheme() {
     const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -618,6 +648,46 @@ function futureValueNominal(pv, rate, years) {
     return pv * Math.pow(1 + rate, years);
 }
 
+function opportunityCostDisplay(amount, futureValue) {
+    return amount - futureValue;
+}
+
+function formatProjectionValue(amount, futureValue) {
+    if (displayMode === 'worth') {
+        return {
+            text: currency(futureValue),
+            isOpportunityCost: false
+        };
+    }
+
+    return {
+        text: currency(opportunityCostDisplay(amount, futureValue)),
+        isOpportunityCost: true
+    };
+}
+
+function applyProjectionValue(element, amount, futureValue, isNominal = false) {
+    const display = formatProjectionValue(amount, futureValue);
+
+    element.textContent = display.text;
+    element.classList.toggle(
+        'opportunity-cost',
+        display.isOpportunityCost && !isNominal
+    );
+    element.classList.toggle(
+        'opportunity-cost-nominal',
+        display.isOpportunityCost && isNominal
+    );
+}
+
+function compactChartLabel(value) {
+    if (value < 0) {
+        return '-' + compactCurrency(-value);
+    }
+
+    return compactCurrency(value);
+}
+
 function compactCurrency(v) {
     if (v >= 1000000) {
         return '$' + (v / 1000000).toFixed(1) + 'M';
@@ -656,6 +726,16 @@ function getChartMilestones(yearsToRetirement) {
     });
 }
 
+function projectionValue(amount, rate, inflation, years, nominal = false) {
+    const future = nominal
+        ? futureValueNominal(amount, rate, years)
+        : futureValue(amount, rate, inflation, years);
+
+    return displayMode === 'worth'
+        ? future
+        : opportunityCostDisplay(amount, future);
+}
+
 function filterOverlappingMilestones(
     milestones,
     amount,
@@ -665,7 +745,7 @@ function filterOverlappingMilestones(
     minLabelGap = 14
 ) {
     const withPositions = milestones.map(milestone => {
-        const value = futureValue(
+        const value = projectionValue(
             amount,
             rate,
             inflation,
@@ -701,17 +781,30 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
     const svg = document.getElementById('growthChart');
     const milestones = getChartMilestones(yearsToRetirement);
     const maxYears = Math.max(50, yearsToRetirement, 1);
+    const isOpportunityCost = displayMode === 'opportunity';
+    const chartAccent = isOpportunityCost ? '#ff3b30' : 'var(--accent)';
     const values = [];
 
     for (let year = 0; year <= maxYears; year++) {
-        values.push(futureValue(amount, rate, inflation, year));
+        values.push(projectionValue(amount, rate, inflation, year));
     }
 
-    const maxValue = Math.max(...values, 1);
-    const minValue = 0;
+    let minValue;
+    let maxValue;
+
+    if (isOpportunityCost) {
+        minValue = Math.min(...values, 0);
+        maxValue = 0;
+    } else {
+        minValue = 0;
+        maxValue = Math.max(...values, 1);
+    }
+
     const width = 340;
     const height = 200;
-    const pad = { top: 14, right: 12, bottom: 30, left: 48 };
+    const pad = isOpportunityCost
+        ? { top: 28, right: 12, bottom: 14, left: 48 }
+        : { top: 14, right: 12, bottom: 30, left: 48 };
     const plotW = width - pad.left - pad.right;
     const plotH = height - pad.top - pad.bottom;
     const valueRange = maxValue - minValue || 1;
@@ -723,14 +816,15 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
     let linePath = '';
 
     for (let year = 0; year <= maxYears; year++) {
-        const value = futureValue(amount, rate, inflation, year);
+        const value = projectionValue(amount, rate, inflation, year);
         linePath += `${year === 0 ? 'M' : 'L'} ${x(year)} ${y(value)} `;
     }
 
-    const areaPath =
-        `${linePath} L ${x(maxYears)} ${y(minValue)} L ${x(0)} ${y(minValue)} Z`;
-
-    const baseline = pad.top + plotH;
+    const baselineY = y(0);
+    const milestoneLabelY = isOpportunityCost ? baselineY - 6 : height - 8;
+    const areaPath = isOpportunityCost
+        ? `${linePath} L ${x(maxYears)} ${baselineY} L ${x(0)} ${baselineY} Z`
+        : `${linePath} L ${x(maxYears)} ${y(minValue)} L ${x(0)} ${y(minValue)} Z`;
 
     const visibleMilestones = filterOverlappingMilestones(
         milestones,
@@ -744,9 +838,11 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
         const value = milestone.value;
         const cx = x(milestone.years);
         const cy = milestone.cy;
-        const color = milestone.highlight
-            ? 'var(--accent)'
-            : 'var(--secondary)';
+        const color = isOpportunityCost
+            ? '#ff3b30'
+            : milestone.highlight
+                ? 'var(--accent)'
+                : 'var(--secondary)';
         const opacity = milestone.highlight ? '1' : '0.7';
         const strokeWidth = milestone.highlight ? '1.5' : '1';
         const fontWeight = milestone.highlight ? '600' : '400';
@@ -754,7 +850,7 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
         return `
             <line
                 x1="${cx}"
-                y1="${baseline}"
+                y1="${baselineY}"
                 x2="${cx}"
                 y2="${cy}"
                 stroke="${color}"
@@ -780,10 +876,10 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
                 font-size="10"
                 font-weight="${fontWeight}"
                 dominant-baseline="middle"
-            >${compactCurrency(value)}</text>
+            >${compactChartLabel(value)}</text>
             <text
                 x="${cx}"
-                y="${height - 8}"
+                y="${milestoneLabelY}"
                 text-anchor="middle"
                 fill="${color}"
                 font-size="10"
@@ -796,22 +892,22 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
     svg.innerHTML = `
         <line
             x1="${pad.left}"
-            y1="${baseline}"
+            y1="${baselineY}"
             x2="${pad.left + plotW}"
-            y2="${baseline}"
+            y2="${baselineY}"
             stroke="var(--secondary)"
             opacity="0.3"
         />
         <path
             d="${areaPath}"
-            fill="var(--accent)"
+            fill="${chartAccent}"
             opacity="0.12"
         />
         ${milestoneMarkup}
         <path
             d="${linePath}"
             fill="none"
-            stroke="var(--accent)"
+            stroke="${chartAccent}"
             stroke-width="2.5"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -840,34 +936,37 @@ function calculate() {
         [30, 'y30'],
         [50, 'y50']
     ].forEach(([years, id]) => {
-        document.getElementById(id + 'nom').textContent =
-            currency(futureValueNominal(amount, rate, years));
+        applyProjectionValue(
+            document.getElementById(id + 'nom'),
+            amount,
+            futureValueNominal(amount, rate, years),
+            true
+        );
 
-        document.getElementById(id).textContent =
-            currency(futureValue(amount, rate, inflation, years));
+        applyProjectionValue(
+            document.getElementById(id),
+            amount,
+            futureValue(amount, rate, inflation, years)
+        );
     });
 
     const yearsToRetirement =
         Math.max(0, RETIREMENT_AGE - age);
 
-    document.getElementById('retirementNominalValue').textContent =
-        currency(
-            futureValueNominal(
-                amount,
-                rate,
-                yearsToRetirement
-            )
-        );
+    applyProjectionValue(
+        document.getElementById('retirementNominalValue'),
+        amount,
+        futureValueNominal(amount, rate, yearsToRetirement),
+        true
+    );
 
-    document.getElementById('retirementValue').textContent =
-        currency(
-            futureValue(
-                amount,
-                rate,
-                inflation,
-                yearsToRetirement
-            )
-        );
+    applyProjectionValue(
+        document.getElementById('retirementValue'),
+        amount,
+        futureValue(amount, rate, inflation, yearsToRetirement)
+    );
+
+    updateDisplayModeUI();
 
     const inflationRate =
         parseFloat(document.getElementById('inflationRate').value) || 0;
@@ -923,6 +1022,7 @@ function addAmount(value) {
 function readSettings() {
     const defaults = {
         returnMode: 'invest',
+        displayMode: 'opportunity',
         investReturnRate: DEFAULT_INVEST_RETURN,
         saveReturnRate: DEFAULT_SAVE_RETURN,
         inflationRate: 3,
@@ -973,6 +1073,34 @@ function updateModeButtons() {
         .classList.toggle('active', returnMode === 'save');
 }
 
+function updateDisplayModeUI() {
+    document.getElementById('retirementTitle').textContent =
+        displayMode === 'worth'
+            ? 'Worth At Retirement (Age 65)'
+            : 'Opportunity Cost At Retirement (Age 65)';
+
+    document
+        .getElementById('modeWorth')
+        .classList.toggle('active', displayMode === 'worth');
+
+    document
+        .getElementById('modeOpportunityCost')
+        .classList.toggle('active', displayMode === 'opportunity');
+}
+
+function setDisplayMode(mode) {
+    displayMode = mode;
+
+    writeSettings({ displayMode: mode });
+    updateDisplayModeUI();
+    calculate();
+    renderLog();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
 function setReturnMode(mode) {
     const settings = readSettings();
     const currentReturn =
@@ -1014,6 +1142,7 @@ function saveSettings() {
 
     writeSettings({
         returnMode,
+        displayMode,
         investReturnRate:
             returnMode === 'invest'
                 ? currentReturn
@@ -1033,6 +1162,7 @@ function loadSettings() {
     const settings = readSettings();
 
     returnMode = settings.returnMode;
+    displayMode = settings.displayMode;
 
     document.getElementById('returnRate').value =
         returnMode === 'invest'
@@ -1046,6 +1176,7 @@ function loadSettings() {
         settings.currentAge;
 
     updateModeButtons();
+    updateDisplayModeUI();
 }
 
 function getLog() {
@@ -1172,6 +1303,7 @@ function resetAppData() {
     localStorage.removeItem('purchaseLog');
 
     returnMode = 'invest';
+    displayMode = 'opportunity';
     document.getElementById('amount').value = 100;
     document.getElementById('description').value = '';
     document.getElementById('logSearch').value = '';
@@ -1231,7 +1363,13 @@ function renderLog() {
     container.className = '';
 
     container.innerHTML =
-        log.map(item => `
+        log.map(item => {
+            const projection = formatProjectionValue(
+                item.amount,
+                item.retirementValue
+            );
+
+            return `
             <div class="log-item">
                 <div class="log-content">
                     <div class="log-description">
@@ -1239,7 +1377,12 @@ function renderLog() {
                     </div>
                     <div class="log-value">
                         ${currency(item.amount)}
-                        → ${currency(item.retirementValue)}
+                        →
+                        <span class="${
+                            projection.isOpportunityCost
+                                ? 'opportunity-cost'
+                                : ''
+                        }">${projection.text}</span>
                         at retirement
                     </div>
                     <div class="log-date">
@@ -1255,7 +1398,8 @@ function renderLog() {
                     Delete
                 </button>
             </div>
-        `).join('');
+        `;
+        }).join('');
 }
 
 [
@@ -1276,6 +1420,14 @@ document
 document
     .getElementById('modeSave')
     .addEventListener('click', () => setReturnMode('save'));
+
+document
+    .getElementById('modeWorth')
+    .addEventListener('click', () => setDisplayMode('worth'));
+
+document
+    .getElementById('modeOpportunityCost')
+    .addEventListener('click', () => setDisplayMode('opportunity'));
 
 document
     .getElementById('logSearch')
