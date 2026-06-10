@@ -189,15 +189,54 @@ input[type="text"] {
     cursor: pointer;
 }
 
-.result-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
+.result-table {
+    display: grid;
+    grid-template-columns: 1fr 6.75rem 6.75rem;
+    column-gap: 16px;
     font-size: 18px;
 }
 
-.result-row:not(:last-child) {
+.result-table.no-inflation {
+    grid-template-columns: 1fr 6.75rem;
+}
+
+.result-table.no-inflation .result-table-header > *,
+.result-table.no-inflation .result-nominal {
+    display: none;
+}
+
+.result-table-header,
+.result-row {
+    display: contents;
+}
+
+.result-table-header > * {
+    padding-bottom: 8px;
     border-bottom: 1px solid rgba(128,128,128,0.15);
+    font-size: 13px;
+    color: var(--secondary);
+}
+
+.result-row > * {
+    padding: 10px 0;
+}
+
+.result-row:not(:last-child) > * {
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+}
+
+.result-col-value,
+.result-nominal,
+.result-real {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    justify-self: stretch;
+}
+
+.result-nominal {
+    color: var(--secondary);
+    font-weight: 400;
+    opacity: 0.85;
 }
 
 .big-number {
@@ -209,10 +248,66 @@ input[type="text"] {
     font-size: 14px;
 }
 
+.big-number-values {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 16px 36px;
+    margin-top: 8px;
+    max-width: 100%;
+}
+
+.big-number-values.stacked {
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.big-number-values.stacked .big-number-divider {
+    display: none;
+}
+
+.big-number-values.no-inflation .big-number-nominal,
+.big-number-values.no-inflation .big-number-divider,
+.big-number-values.no-inflation .big-number-real .label {
+    display: none;
+}
+
+.big-number-nominal,
+.big-number-real {
+    text-align: center;
+    min-width: 0;
+}
+
+.big-number-nominal .label,
+.big-number-real .label {
+    margin-top: 8px;
+}
+
+.big-number-divider {
+    color: var(--secondary);
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 1;
+    opacity: 0.45;
+    flex-shrink: 0;
+}
+
+.big-number .value-nominal {
+    font-size: 42px;
+    font-weight: 400;
+    color: var(--secondary);
+    opacity: 0.85;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
 .big-number .value {
     font-size: 42px;
     font-weight: 700;
-    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
 }
 
 .log-item {
@@ -296,7 +391,7 @@ input[type="text"] {
 </head>
 <body>
 
-<h1>Opportunity Cost</h1>
+<h1>Opportunity Cost Calculator</h1>
 
 <div class="card">
     <label>Purchase Price ($)</label>
@@ -347,34 +442,57 @@ input[type="text"] {
 <div class="card">
     <div class="big-number">
         <div class="label">Worth At Retirement (Age 65)</div>
-        <div id="retirementValue" class="value">$0</div>
+        <div id="retirementValues" class="big-number-values">
+            <div class="big-number-nominal">
+                <div id="retirementNominalValue" class="value-nominal">$0</div>
+                <div class="label">Nominal</div>
+            </div>
+            <span class="big-number-divider" aria-hidden="true">|</span>
+            <div class="big-number-real">
+                <div id="retirementValue" class="value">$0</div>
+                <div id="afterInflationNote" class="label">After Inflation</div>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="card">
-    <div class="result-row">
-        <span>5 Years</span>
-        <strong id="y5"></strong>
-    </div>
+    <div id="resultTable" class="result-table">
+        <div class="result-table-header">
+            <span></span>
+            <span class="result-col-value result-header-nominal">Nominal</span>
+            <span class="result-col-value result-header-inflation">After Inflation</span>
+        </div>
 
-    <div class="result-row">
-        <span>10 Years</span>
-        <strong id="y10"></strong>
-    </div>
+        <div class="result-row">
+            <span>5 Years</span>
+            <span id="y5nom" class="result-nominal"></span>
+            <strong id="y5" class="result-real"></strong>
+        </div>
 
-    <div class="result-row">
-        <span>20 Years</span>
-        <strong id="y20"></strong>
-    </div>
+        <div class="result-row">
+            <span>10 Years</span>
+            <span id="y10nom" class="result-nominal"></span>
+            <strong id="y10" class="result-real"></strong>
+        </div>
 
-    <div class="result-row">
-        <span>30 Years</span>
-        <strong id="y30"></strong>
-    </div>
+        <div class="result-row">
+            <span>20 Years</span>
+            <span id="y20nom" class="result-nominal"></span>
+            <strong id="y20" class="result-real"></strong>
+        </div>
 
-    <div class="result-row">
-        <span>50 Years</span>
-        <strong id="y50"></strong>
+        <div class="result-row">
+            <span>30 Years</span>
+            <span id="y30nom" class="result-nominal"></span>
+            <strong id="y30" class="result-real"></strong>
+        </div>
+
+        <div class="result-row">
+            <span>50 Years</span>
+            <span id="y50nom" class="result-nominal"></span>
+            <strong id="y50" class="result-real"></strong>
+        </div>
     </div>
 
     <div class="chart-container">
@@ -480,6 +598,10 @@ function futureValue(pv, rate, inflation, years) {
     const realRate = (1 + rate) / (1 + inflation) - 1;
 
     return pv * Math.pow(1 + realRate, years);
+}
+
+function futureValueNominal(pv, rate, years) {
+    return pv * Math.pow(1 + rate, years);
 }
 
 function compactCurrency(v) {
@@ -697,23 +819,31 @@ function calculate() {
         parseFloat(document.getElementById('currentAge').value) ||
         calculateAge(USER_BIRTH_DATE);
 
-    document.getElementById('y5').textContent =
-        currency(futureValue(amount, rate, inflation, 5));
+    [
+        [5, 'y5'],
+        [10, 'y10'],
+        [20, 'y20'],
+        [30, 'y30'],
+        [50, 'y50']
+    ].forEach(([years, id]) => {
+        document.getElementById(id + 'nom').textContent =
+            currency(futureValueNominal(amount, rate, years));
 
-    document.getElementById('y10').textContent =
-        currency(futureValue(amount, rate, inflation, 10));
-
-    document.getElementById('y20').textContent =
-        currency(futureValue(amount, rate, inflation, 20));
-
-    document.getElementById('y30').textContent =
-        currency(futureValue(amount, rate, inflation, 30));
-
-    document.getElementById('y50').textContent =
-        currency(futureValue(amount, rate, inflation, 50));
+        document.getElementById(id).textContent =
+            currency(futureValue(amount, rate, inflation, years));
+    });
 
     const yearsToRetirement =
         Math.max(0, RETIREMENT_AGE - age);
+
+    document.getElementById('retirementNominalValue').textContent =
+        currency(
+            futureValueNominal(
+                amount,
+                rate,
+                yearsToRetirement
+            )
+        );
 
     document.getElementById('retirementValue').textContent =
         currency(
@@ -725,9 +855,43 @@ function calculate() {
             )
         );
 
+    const inflationRate =
+        parseFloat(document.getElementById('inflationRate').value) || 0;
+
+    updateInflationUI(inflationRate);
+    updateRetirementLayout();
+
     drawChart(amount, rate, inflation, yearsToRetirement);
 
     saveSettings();
+}
+
+function updateInflationUI(inflationRate) {
+    const noInflation = inflationRate === 0;
+
+    document
+        .getElementById('resultTable')
+        .classList.toggle('no-inflation', noInflation);
+
+    document
+        .getElementById('retirementValues')
+        .classList.toggle('no-inflation', noInflation);
+}
+
+function updateRetirementLayout() {
+    const container = document.getElementById('retirementValues');
+
+    container.classList.remove('stacked');
+
+    if (container.classList.contains('no-inflation')) {
+        return;
+    }
+
+    requestAnimationFrame(() => {
+        if (container.scrollWidth > container.clientWidth + 1) {
+            container.classList.add('stacked');
+        }
+    });
 }
 
 function addAmount(value) {
@@ -1109,6 +1273,8 @@ document
             deletePurchase(button.dataset.deleteId);
         }
     });
+
+window.addEventListener('resize', updateRetirementLayout);
 
 loadSettings();
 calculate();

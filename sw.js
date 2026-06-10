@@ -1,4 +1,4 @@
-const CACHE = 'opportunity-cost-v1';
+const CACHE = 'opportunity-cost-v2';
 
 const PRECACHE = [
     './',
