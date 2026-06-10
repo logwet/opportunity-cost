@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#ffffff">
@@ -48,9 +48,11 @@
 
 html {
     background: var(--bg);
+    touch-action: manipulation;
 }
 
 body {
+    touch-action: manipulation;
     margin: 0;
     padding:
         max(24px, env(safe-area-inset-top))
@@ -191,13 +193,18 @@ input[type="text"] {
 
 .result-table {
     display: grid;
-    grid-template-columns: 1fr 6.75rem 6.75rem;
-    column-gap: 16px;
+    grid-template-columns: max-content 6.75rem 6.75rem;
+    column-gap: 12px;
     font-size: 18px;
 }
 
 .result-table.no-inflation {
-    grid-template-columns: 1fr 6.75rem;
+    grid-template-columns: max-content 6.75rem;
+}
+
+.result-row > :first-child {
+    white-space: nowrap;
+    padding-right: 4px;
 }
 
 .result-table.no-inflation .result-table-header > *,
@@ -249,23 +256,32 @@ input[type="text"] {
 }
 
 .big-number-values {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    flex-wrap: nowrap;
-    gap: 16px 36px;
+    column-gap: 20px;
+    width: 100%;
     margin-top: 8px;
-    max-width: 100%;
 }
 
 .big-number-values.stacked {
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 16px;
+    grid-template-columns: 1fr;
+    row-gap: 16px;
 }
 
 .big-number-values.stacked .big-number-divider {
     display: none;
+}
+
+.big-number-values.stacked .big-number-nominal,
+.big-number-values.stacked .big-number-real {
+    text-align: center;
+    justify-self: center;
+    padding: 0;
+}
+
+.big-number-values.no-inflation {
+    grid-template-columns: 1fr;
 }
 
 .big-number-values.no-inflation .big-number-nominal,
@@ -274,24 +290,38 @@ input[type="text"] {
     display: none;
 }
 
-.big-number-nominal,
-.big-number-real {
+.big-number-values.no-inflation .big-number-real {
     text-align: center;
+    justify-self: center;
+    padding: 0;
+}
+
+.big-number-nominal {
+    text-align: right;
+    justify-self: stretch;
+    padding-right: 4px;
     min-width: 0;
 }
 
-.big-number-nominal .label,
-.big-number-real .label {
-    margin-top: 8px;
+.big-number-real {
+    text-align: left;
+    justify-self: stretch;
+    padding-left: 4px;
+    min-width: 0;
 }
 
 .big-number-divider {
+    justify-self: center;
     color: var(--secondary);
     font-size: 34px;
     font-weight: 300;
     line-height: 1;
     opacity: 0.45;
-    flex-shrink: 0;
+}
+
+.big-number-nominal .label,
+.big-number-real .label {
+    margin-top: 8px;
 }
 
 .big-number .value-nominal {
@@ -421,7 +451,7 @@ input[type="text"] {
         <div class="age-row">
             <div class="age-input">
                 <label>Current Age</label>
-                <input id="currentAge" class="small-input" type="number" value="23">
+                <input id="currentAge" class="small-input" type="number" value="25">
             </div>
 
             <div class="mode-toggle">
@@ -542,7 +572,7 @@ input[type="text"] {
 
 <script>
 const RETIREMENT_AGE = 65;
-const USER_BIRTH_DATE = new Date(2000, 0, 1);
+const DEFAULT_CURRENT_AGE = 25;
 const DEFAULT_INVEST_RETURN = 9;
 const DEFAULT_SAVE_RETURN = 3.2;
 
@@ -571,17 +601,6 @@ applyTheme();
 window
     .matchMedia('(prefers-color-scheme: dark)')
     .addEventListener('change', applyTheme);
-
-function calculateAge(birthDate, asOf = new Date()) {
-    let age = asOf.getFullYear() - birthDate.getFullYear();
-    const monthDiff = asOf.getMonth() - birthDate.getMonth();
-
-    if (monthDiff < 0 || (monthDiff === 0 && asOf.getDate() < birthDate.getDate())) {
-        age--;
-    }
-
-    return age;
-}
 
 function currency(v) {
     return new Intl.NumberFormat(
@@ -817,7 +836,7 @@ function calculate() {
 
     const age =
         parseFloat(document.getElementById('currentAge').value) ||
-        calculateAge(USER_BIRTH_DATE);
+        DEFAULT_CURRENT_AGE;
 
     [
         [5, 'y5'],
@@ -911,7 +930,8 @@ function readSettings() {
         returnMode: 'invest',
         investReturnRate: DEFAULT_INVEST_RETURN,
         saveReturnRate: DEFAULT_SAVE_RETURN,
-        inflationRate: 3
+        inflationRate: 3,
+        currentAge: DEFAULT_CURRENT_AGE
     };
     const saved =
         localStorage.getItem('opportunityCostSettings');
@@ -1008,7 +1028,9 @@ function saveSettings() {
                 ? currentReturn
                 : settings.saveReturnRate,
         inflationRate:
-            document.getElementById('inflationRate').value
+            document.getElementById('inflationRate').value,
+        currentAge:
+            document.getElementById('currentAge').value
     });
 }
 
@@ -1026,7 +1048,7 @@ function loadSettings() {
         settings.inflationRate;
 
     document.getElementById('currentAge').value =
-        calculateAge(USER_BIRTH_DATE);
+        settings.currentAge;
 
     updateModeButtons();
 }
@@ -1055,7 +1077,7 @@ function savePurchase() {
 
     const age =
         parseFloat(document.getElementById('currentAge').value) ||
-        calculateAge(USER_BIRTH_DATE);
+        DEFAULT_CURRENT_AGE;
 
     const retirementValue =
         futureValue(
@@ -1142,8 +1164,8 @@ function resetAppData() {
         'This will permanently clear all saved data:\n\n' +
         '• Annual return settings (Invest and Save)\n' +
         '• Inflation rate\n' +
-        '• All avoided purchases\n\n' +
-        'Your current age will reset to today\'s calculated age.\n\n' +
+        '• All avoided purchases\n' +
+        '• Current age\n\n' +
         'Are you sure?'
     );
 
