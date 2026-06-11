@@ -1537,7 +1537,7 @@ input[type="text"] {
 </div>
 
 <script>
-const APP_VERSION = '1.2';
+const APP_VERSION = '1.21';
 const DEFAULT_PURCHASE_AMOUNT = 100;
 const DEFAULT_RETIREMENT_AGE = 67;
 const DEFAULT_CURRENT_AGE = 25;
@@ -1854,11 +1854,6 @@ function setupMobileHelp() {
     });
 
     wrapControlWithHelp(
-        document.querySelector('.quick-buttons'),
-        UI_TOOLTIPS.quickAdd
-    );
-
-    wrapControlWithHelp(
         document.querySelector('.asset-type-control'),
         combinedHelpText([
             'assetDepreciating',
@@ -1904,19 +1899,6 @@ function setupMobileHelp() {
         );
     }
 
-    const themeToggle = document.getElementById('themeToggle');
-
-    if (themeToggle && !themeToggle.parentElement?.classList.contains(
-        'page-header-actions'
-    )) {
-        const actions = document.createElement('div');
-        actions.className = 'page-header-actions';
-
-        themeToggle.parentNode.insertBefore(actions, themeToggle);
-        actions.appendChild(createHelpTrigger(UI_TOOLTIPS.themeToggle));
-        actions.appendChild(themeToggle);
-    }
-
     const saveRow = document.querySelector('#description')?.closest('.row');
 
     if (saveRow && !saveRow.parentElement?.classList.contains('row-with-help')) {
@@ -1928,18 +1910,20 @@ function setupMobileHelp() {
         wrap.appendChild(createHelpTrigger(UI_TOOLTIPS.savePurchase));
     }
 
-    document.querySelectorAll('.reset-button').forEach(button => {
-        if (button.parentElement?.classList.contains('reset-with-help')) {
-            return;
-        }
+    const mobileResetButton =
+        document.querySelector('.reset-button-mobile');
 
+    if (
+        mobileResetButton &&
+        !mobileResetButton.parentElement?.classList.contains('reset-with-help')
+    ) {
         const wrap = document.createElement('div');
         wrap.className = 'reset-with-help control-with-help';
 
-        button.parentNode.insertBefore(wrap, button);
-        wrap.appendChild(button);
+        mobileResetButton.parentNode.insertBefore(wrap, mobileResetButton);
+        wrap.appendChild(mobileResetButton);
         wrap.appendChild(createHelpTrigger(UI_TOOLTIPS.resetButton));
-    });
+    }
 }
 
 document.addEventListener('click', event => {
