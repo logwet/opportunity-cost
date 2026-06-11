@@ -40,7 +40,7 @@
 <meta name="twitter:title" content="Opportunity Cost Calculator">
 <meta
     name="twitter:description"
-    content="Free calculator: compare a purchase vs investing or saving. Projections to age 67, inflation-adjusted, private PWA."
+    content="Free calculator: compare a purchase vs investing or saving. Projections to your retirement age, inflation-adjusted, private PWA."
 >
 <meta
     name="twitter:image"
@@ -54,7 +54,7 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Opportunity Cost Calculator",
-    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. Inflation-adjusted projections to retirement age 67.",
+    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. Inflation-adjusted projections to a configurable retirement age (default 67).",
     "url": "https://logwet.github.io/opportunity-cost/",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Any",
@@ -69,7 +69,7 @@
         "Purchase vs invest or save comparison",
         "Asset depreciation and appreciation",
         "Inflation-adjusted projections",
-        "Retirement horizon at age 67",
+        "Configurable retirement age (default 67)",
         "Offline installable PWA",
         "Private on-device storage"
     ]
@@ -236,6 +236,41 @@ label {
     color: var(--secondary);
 }
 
+.purchase-price-card {
+    position: relative;
+    padding-bottom: 36px;
+}
+
+.amount-reset {
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--secondary);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0.75;
+}
+
+.amount-reset:hover {
+    opacity: 1;
+    color: #ff3b30;
+}
+
+.amount-reset svg {
+    width: 16px;
+    height: 16px;
+}
+
 input[type="number"] {
     width: 100%;
     border: none;
@@ -271,7 +306,7 @@ input[type="text"] {
 
 .settings-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
 }
 
@@ -456,6 +491,26 @@ input[type="text"] {
     opacity: 0.85;
 }
 
+.value-emphasized {
+    color: var(--text);
+    font-weight: 700;
+    opacity: 1;
+}
+
+.value-deemphasized {
+    color: var(--secondary);
+    font-weight: 400;
+    opacity: 0.85;
+}
+
+.result-table .value-emphasized {
+    font-weight: 700;
+}
+
+.result-table .value-deemphasized {
+    font-weight: 400;
+}
+
 .opportunity-cost {
     color: #ff3b30 !important;
 }
@@ -561,11 +616,23 @@ input[type="text"] {
     line-height: 1.1;
 }
 
+.big-number .value-nominal.value-emphasized {
+    font-weight: 700;
+    color: var(--text);
+    opacity: 1;
+}
+
 .big-number .value {
     font-size: 42px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     line-height: 1.1;
+}
+
+.big-number .value.value-deemphasized {
+    font-weight: 400;
+    color: var(--secondary);
+    opacity: 0.85;
 }
 
 .log-item {
@@ -992,11 +1059,40 @@ input[type="text"] {
     min-width: 0;
 }
 
-.chart-container .help-trigger {
-    position: absolute;
-    top: 18px;
-    right: 0;
-    z-index: 2;
+.chart-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.chart-title {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--secondary);
+}
+
+.chart-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.chart-value-mode-control {
+    flex-shrink: 0;
+}
+
+.chart-value-mode-control button {
+    white-space: nowrap;
+}
+
+.chart-value-mode-control[hidden] {
+    display: none !important;
 }
 
 .page-header-actions {
@@ -1045,7 +1141,7 @@ input[type="text"] {
 <noscript>
     <p>
         Opportunity Cost Calculator — compare a purchase price against
-        investing or saving the money instead. Projections to retirement (age 67),
+        investing or saving the money instead. Projections to your retirement age,
         with inflation adjustment. Enable JavaScript to use the calculator.
     </p>
 </noscript>
@@ -1071,7 +1167,7 @@ input[type="text"] {
 <div class="app-layout">
 <div class="app-column app-column-inputs">
 
-<div class="card">
+<div class="card purchase-price-card">
     <label>Purchase Price ($)</label>
     <input
         id="amount"
@@ -1090,7 +1186,24 @@ input[type="text"] {
         <button onclick="addAmount(50)">+$50</button>
         <button onclick="addAmount(100)">+$100</button>
         <button onclick="addAmount(1000)">+$1000</button>
+        <button onclick="addAmount(10000)">+$10000</button>
     </div>
+
+    <button
+        id="resetAmount"
+        class="amount-reset"
+        type="button"
+        onclick="resetPurchaseAmount()"
+        aria-label="Reset purchase price to $100"
+    >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M3 6h18"/>
+            <path d="M8 6V4h8v2"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+            <path d="M10 11v6"/>
+            <path d="M14 11v6"/>
+        </svg>
+    </button>
 </div>
 
 <div class="card">
@@ -1153,7 +1266,12 @@ input[type="text"] {
     <div class="settings-grid">
         <div>
             <label>Your Current Age</label>
-            <input id="currentAge" class="small-input" type="number" value="25" step="1" min="0" inputmode="numeric">
+            <input id="currentAge" class="small-input" type="number" value="25" step="1" min="1" max="120" inputmode="numeric">
+        </div>
+
+        <div>
+            <label>Retirement Age</label>
+            <input id="retirementAge" class="small-input" type="number" value="67" step="1" min="25" max="120" inputmode="numeric">
         </div>
 
         <div>
@@ -1270,6 +1388,28 @@ input[type="text"] {
             role="img"
             aria-label="Expected value over time"
         ></svg>
+        <div class="chart-footer">
+            <p id="chartTitle" class="chart-title"></p>
+            <div class="chart-controls">
+                <div
+                    id="chartValueModeControl"
+                    class="segmented-control chart-value-mode-control compact"
+                    role="group"
+                    aria-label="Chart value basis"
+                >
+                    <button
+                        id="chartValueModeReal"
+                        type="button"
+                        class="active"
+                    >
+                        After Inflation
+                    </button>
+                    <button id="chartValueModeNominal" type="button">
+                        Nominal
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1397,9 +1537,12 @@ input[type="text"] {
 </div>
 
 <script>
-const APP_VERSION = '1.1';
-const RETIREMENT_AGE = 67;
+const APP_VERSION = '1.2';
+const DEFAULT_PURCHASE_AMOUNT = 100;
+const DEFAULT_RETIREMENT_AGE = 67;
 const DEFAULT_CURRENT_AGE = 25;
+const MIN_CURRENT_AGE = 1;
+const MAX_AGE = 120;
 const DEFAULT_INVEST_RETURN = 9;
 const DEFAULT_SAVE_RETURN = 3.2;
 const DEFAULT_DEPRECIATING_RETURN = -5;
@@ -1412,12 +1555,15 @@ let displayMode = 'opportunity';
 let selectedLogId = null;
 let chartHoverState = null;
 let chartHoverBound = false;
+let chartValueMode = 'real';
 
 const UI_TOOLTIPS = {
     amount:
         'The dollar amount you are considering spending on this asset or purchase.',
     quickAdd:
         'Add this amount to the purchase price.',
+    resetAmount:
+        'Reset the purchase price to $100.',
     assetDepreciating:
         'Treat the asset as losing value over time. Default annual return is −5%.',
     assetFlat:
@@ -1427,7 +1573,9 @@ const UI_TOOLTIPS = {
     assetReturnRate:
         'Expected annual change in the asset’s value. Negative for depreciation (e.g. a car). After-inflation columns adjust this using the shared inflation rate.',
     currentAge:
-        'Your age today. Used with the retirement age to calculate years until retirement.',
+        'Your age today (1–120). Used with the retirement age to calculate years until retirement.',
+    retirementAge:
+        'Target age for retirement projections (default 67, Australian preservation age). Must be at least your current age and no more than 120.',
     modeInvest:
         'Compare against investing in growth assets. Default alternative return is 9%.',
     modeSave:
@@ -1447,7 +1595,11 @@ const UI_TOOLTIPS = {
     resultHeaderInflation:
         'Values adjusted for inflation so you can compare in today’s purchasing power.',
     growthChart:
-        'Projected value over time using after-inflation returns. Touch or drag along the chart to inspect a year and value.',
+        'Projected value over time. Use the toggle for after-inflation (default) or nominal values. Touch or drag along the chart to inspect a year and value.',
+    chartValueModeReal:
+        'Show after-inflation values in the chart, table, and retirement preview.',
+    chartValueModeNominal:
+        'Show nominal values in the chart, table, and retirement preview.',
     description:
         'Optional label for this projection in your saved projections log.',
     savePurchase:
@@ -1477,6 +1629,7 @@ function applyTooltips() {
         ['amount'],
         ['assetReturnRate'],
         ['currentAge'],
+        ['retirementAge'],
         ['returnRate'],
         ['inflationRate'],
         ['description'],
@@ -1511,7 +1664,10 @@ function applyTooltips() {
         'modeWorthAsset',
         'savePurchase',
         'resetButton',
-        'themeToggle'
+        'resetAmount',
+        'themeToggle',
+        'chartValueModeReal',
+        'chartValueModeNominal'
     ];
 
     idButtons.forEach(id => {
@@ -1689,6 +1845,7 @@ function setupMobileHelp() {
         ['assetReturnRate', () => labelForInput('assetReturnRate')],
         ['returnRate', () => labelForInput('returnRate')],
         ['currentAge', () => labelForInput('currentAge')],
+        ['retirementAge', () => labelForInput('retirementAge')],
         ['inflationRate', () => labelForInput('inflationRate')],
         ['description', () => labelForInput('description')],
         ['logSearch', () => labelForInput('logSearch')]
@@ -1739,10 +1896,10 @@ function setupMobileHelp() {
     addHelpInline(retirementNominalLabel, UI_TOOLTIPS.resultHeaderNominal);
     addHelpInline(retirementInflationLabel, UI_TOOLTIPS.resultHeaderInflation);
 
-    const chartContainer = document.querySelector('.chart-container');
+    const chartControls = document.querySelector('.chart-controls');
 
-    if (chartContainer && !chartContainer.querySelector('.help-trigger')) {
-        chartContainer.appendChild(
+    if (chartControls && !chartControls.querySelector('.help-trigger')) {
+        chartControls.appendChild(
             createHelpTrigger(UI_TOOLTIPS.growthChart)
         );
     }
@@ -1929,22 +2086,37 @@ function formatProjectionValue(assetFuture, altFuture) {
     };
 }
 
+function chartUsesNominalValues() {
+    const inflation =
+        parseFloat(document.getElementById('inflationRate').value) || 0;
+
+    if (inflation === 0) {
+        return false;
+    }
+
+    return chartValueMode === 'nominal';
+}
+
 function applyProjectionValue(
     element,
     assetFuture,
     altFuture,
-    isNominal = false
+    isNominalColumn = false
 ) {
     const display = formatProjectionValue(assetFuture, altFuture);
+    const emphasizeNominal = chartUsesNominalValues();
+    const isPrimary = isNominalColumn === emphasizeNominal;
 
     element.textContent = display.text;
+    element.classList.toggle('value-emphasized', isPrimary);
+    element.classList.toggle('value-deemphasized', !isPrimary);
     element.classList.toggle(
         'opportunity-cost',
-        display.isOpportunityCost && !isNominal
+        display.isOpportunityCost && isPrimary
     );
     element.classList.toggle(
         'opportunity-cost-nominal',
-        display.isOpportunityCost && isNominal
+        display.isOpportunityCost && !isPrimary
     );
 }
 
@@ -2031,7 +2203,8 @@ function filterOverlappingMilestones(
             assetRate,
             altRate,
             inflation,
-            milestone.years
+            milestone.years,
+            chartUsesNominalValues()
         );
 
         return {
@@ -2104,7 +2277,8 @@ function updateChartHover(year) {
         state.assetRate,
         state.altRate,
         state.inflation,
-        year
+        year,
+        chartUsesNominalValues()
     );
     const cx = state.x(year);
     const cy = state.y(value);
@@ -2219,7 +2393,14 @@ function drawChart(
 
     for (let year = 0; year <= maxYears; year++) {
         values.push(
-            projectionValue(amount, assetRate, altRate, inflation, year)
+            projectionValue(
+                amount,
+                assetRate,
+                altRate,
+                inflation,
+                year,
+                chartUsesNominalValues()
+            )
         );
     }
 
@@ -2245,7 +2426,8 @@ function drawChart(
             assetRate,
             altRate,
             inflation,
-            year
+            year,
+            chartUsesNominalValues()
         );
         linePath += `${year === 0 ? 'M' : 'L'} ${x(year)} ${y(value)} `;
     }
@@ -2391,9 +2573,9 @@ function calculate() {
     const inflation =
         (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
 
-    const age =
-        parseFloat(document.getElementById('currentAge').value) ||
-        DEFAULT_CURRENT_AGE;
+    syncAgeInputs();
+
+    const age = getCurrentAge();
 
     [
         [5, 'y5'],
@@ -2416,8 +2598,7 @@ function calculate() {
         );
     });
 
-    const yearsToRetirement =
-        Math.max(0, RETIREMENT_AGE - age);
+    const yearsToRetirement = getRetirementAge() - age;
 
     applyProjectionValue(
         document.getElementById('retirementNominalValue'),
@@ -2451,6 +2632,115 @@ function calculate() {
     saveSettings();
 }
 
+function getChartTitle(inflationRate) {
+    const noInflation = inflationRate === 0;
+    const nominal = chartUsesNominalValues();
+    const subjects = {
+        opportunity: 'Opportunity cost',
+        'worth-alt': 'Worth of alternative',
+        'worth-asset': 'Worth of asset'
+    };
+    const subject = subjects[displayMode] || subjects.opportunity;
+
+    if (noInflation) {
+        return `${subject} over time`;
+    }
+
+    const basis = nominal ? 'nominal values' : 'after-inflation values';
+
+    return `${subject} over time (${basis})`;
+}
+
+function updateValueDisplayModeUI(inflationRate) {
+    const noInflation = inflationRate === 0;
+    const nominal = chartUsesNominalValues();
+    const chartTitle = getChartTitle(inflationRate);
+    const titleEl = document.getElementById('chartTitle');
+    const chart = document.getElementById('growthChart');
+    const valueModeControl =
+        document.getElementById('chartValueModeControl');
+    const realModeButton =
+        document.getElementById('chartValueModeReal');
+    const nominalModeButton =
+        document.getElementById('chartValueModeNominal');
+    const resultTable = document.getElementById('resultTable');
+    const retirementValues = document.getElementById('retirementValues');
+    const nominalHeader =
+        document.querySelector('.result-header-nominal');
+    const inflationHeader =
+        document.querySelector('.result-header-inflation');
+    const retirementNominalLabel = document.querySelector(
+        '.big-number-nominal .label'
+    );
+    const retirementInflationLabel =
+        document.getElementById('afterInflationNote');
+
+    resultTable.classList.toggle('value-mode-nominal', nominal && !noInflation);
+    retirementValues.classList.toggle(
+        'value-mode-nominal',
+        nominal && !noInflation
+    );
+
+    if (titleEl) {
+        titleEl.textContent = chartTitle;
+    }
+
+    if (chart) {
+        chart.setAttribute('aria-label', chartTitle);
+    }
+
+    if (valueModeControl) {
+        valueModeControl.hidden = noInflation;
+    }
+
+    if (realModeButton) {
+        realModeButton.classList.toggle('active', !nominal);
+    }
+
+    if (nominalModeButton) {
+        nominalModeButton.classList.toggle('active', nominal);
+    }
+
+    if (nominalHeader) {
+        nominalHeader.classList.toggle('value-emphasized', nominal);
+        nominalHeader.classList.toggle('value-deemphasized', !nominal);
+    }
+
+    if (inflationHeader) {
+        inflationHeader.classList.toggle('value-emphasized', !nominal);
+        inflationHeader.classList.toggle('value-deemphasized', nominal);
+    }
+
+    if (retirementNominalLabel) {
+        retirementNominalLabel.classList.toggle('value-emphasized', nominal);
+        retirementNominalLabel.classList.toggle('value-deemphasized', !nominal);
+    }
+
+    if (retirementInflationLabel) {
+        retirementInflationLabel.classList.toggle('value-emphasized', !nominal);
+        retirementInflationLabel.classList.toggle('value-deemphasized', nominal);
+    }
+}
+
+function setChartValueMode(mode) {
+    if (mode !== 'real' && mode !== 'nominal') {
+        return;
+    }
+
+    if (chartValueMode === mode) {
+        return;
+    }
+
+    selectedLogId = null;
+    chartValueMode = mode;
+    writeSettings({ chartValueMode });
+    calculate();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
 function updateInflationUI(inflationRate) {
     const noInflation = inflationRate === 0;
 
@@ -2461,6 +2751,8 @@ function updateInflationUI(inflationRate) {
     document
         .getElementById('retirementValues')
         .classList.toggle('no-inflation', noInflation);
+
+    updateValueDisplayModeUI(inflationRate);
 }
 
 function updateRetirementLayout() {
@@ -2493,6 +2785,17 @@ function addAmount(value) {
     }
 }
 
+function resetPurchaseAmount() {
+    selectedLogId = null;
+
+    document.getElementById('amount').value = DEFAULT_PURCHASE_AMOUNT;
+    calculate();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
 function readSettings() {
     const defaults = {
         returnMode: 'invest',
@@ -2504,7 +2807,9 @@ function readSettings() {
         flatAssetRate: DEFAULT_FLAT_RETURN,
         appreciatingAssetRate: DEFAULT_APPRECIATING_RETURN,
         inflationRate: 3,
-        currentAge: DEFAULT_CURRENT_AGE
+        currentAge: DEFAULT_CURRENT_AGE,
+        retirementAge: DEFAULT_RETIREMENT_AGE,
+        chartValueMode: 'real'
     };
     const saved =
         localStorage.getItem('opportunityCostSettings');
@@ -2514,6 +2819,12 @@ function readSettings() {
     }
 
     const parsed = JSON.parse(saved);
+    const currentAge = clampAge(
+        parsed.currentAge ?? DEFAULT_CURRENT_AGE,
+        MIN_CURRENT_AGE,
+        MAX_AGE,
+        DEFAULT_CURRENT_AGE
+    );
 
     return {
         ...defaults,
@@ -2524,7 +2835,16 @@ function readSettings() {
             parsed.returnRate ??
             DEFAULT_INVEST_RETURN,
         saveReturnRate:
-            parsed.saveReturnRate ?? DEFAULT_SAVE_RETURN
+            parsed.saveReturnRate ?? DEFAULT_SAVE_RETURN,
+        currentAge,
+        retirementAge: clampAge(
+            parsed.retirementAge ?? DEFAULT_RETIREMENT_AGE,
+            currentAge,
+            MAX_AGE,
+            Math.max(DEFAULT_RETIREMENT_AGE, currentAge)
+        ),
+        chartValueMode:
+            parsed.chartValueMode === 'nominal' ? 'nominal' : 'real'
     };
 }
 
@@ -2582,11 +2902,95 @@ function normalizeDisplayMode(mode) {
     return 'opportunity';
 }
 
+function clampAge(value, min, max, fallback) {
+    const parsed = parseFloat(value);
+
+    if (!Number.isFinite(parsed)) {
+        return fallback;
+    }
+
+    return Math.min(max, Math.max(min, parsed));
+}
+
+function getCurrentAge() {
+    return clampAge(
+        document.getElementById('currentAge').value,
+        MIN_CURRENT_AGE,
+        MAX_AGE,
+        DEFAULT_CURRENT_AGE
+    );
+}
+
+function getRetirementAge() {
+    const currentAge = getCurrentAge();
+    const fallback = Math.max(DEFAULT_RETIREMENT_AGE, currentAge);
+
+    return clampAge(
+        document.getElementById('retirementAge').value,
+        currentAge,
+        MAX_AGE,
+        fallback
+    );
+}
+
+function syncAgeInputs() {
+    const currentInput = document.getElementById('currentAge');
+    const retirementInput = document.getElementById('retirementAge');
+
+    currentInput.min = String(MIN_CURRENT_AGE);
+    currentInput.max = String(MAX_AGE);
+    retirementInput.max = String(MAX_AGE);
+
+    const currentRaw = currentInput.value.trim();
+    const currentParsed = parseFloat(currentRaw);
+    let currentAge = getCurrentAge();
+
+    if (currentRaw !== '' && Number.isFinite(currentParsed)) {
+        if (currentAge !== currentParsed) {
+            currentInput.value = String(currentAge);
+        }
+    }
+
+    retirementInput.min = String(currentAge);
+
+    const retirementRaw = retirementInput.value.trim();
+    const retirementParsed = parseFloat(retirementRaw);
+
+    if (retirementRaw !== '' && Number.isFinite(retirementParsed)) {
+        const retirementAge = getRetirementAge();
+
+        if (retirementAge !== retirementParsed) {
+            retirementInput.value = String(retirementAge);
+        }
+    }
+}
+
+function handleAgeInput() {
+    selectedLogId = null;
+    calculate();
+}
+
+function handleAgeBlur(inputId) {
+    const input = document.getElementById(inputId);
+
+    if (input.value.trim() === '' || !Number.isFinite(parseFloat(input.value))) {
+        input.value = String(
+            inputId === 'currentAge'
+                ? DEFAULT_CURRENT_AGE
+                : Math.max(DEFAULT_RETIREMENT_AGE, getCurrentAge())
+        );
+    }
+
+    syncAgeInputs();
+    calculate();
+}
+
 function updateDisplayModeUI() {
+    const retirementAge = getRetirementAge();
     const titles = {
-        opportunity: `Opportunity Cost At Retirement (Age ${RETIREMENT_AGE})`,
-        'worth-alt': `Worth of Alternative At Retirement (Age ${RETIREMENT_AGE})`,
-        'worth-asset': `Worth of Asset At Retirement (Age ${RETIREMENT_AGE})`
+        opportunity: `Opportunity Cost At Retirement (Age ${retirementAge})`,
+        'worth-alt': `Worth of Alternative At Retirement (Age ${retirementAge})`,
+        'worth-asset': `Worth of Asset At Retirement (Age ${retirementAge})`
     };
 
     document.getElementById('retirementTitle').textContent =
@@ -2610,7 +3014,6 @@ function setDisplayMode(mode) {
 
     displayMode = mode;
 
-    writeSettings({ displayMode: mode });
     updateDisplayModeUI();
     calculate();
     renderLog();
@@ -2651,7 +3054,10 @@ function captureSettingsSnapshot() {
         inflationRate:
             document.getElementById('inflationRate').value,
         currentAge:
-            document.getElementById('currentAge').value
+            document.getElementById('currentAge').value,
+        retirementAge:
+            document.getElementById('retirementAge').value,
+        chartValueMode
     };
 }
 
@@ -2665,11 +3071,13 @@ function applySettingsSnapshot(snapshot) {
     displayMode = normalizeDisplayMode(
         snapshot.displayMode ?? 'opportunity'
     );
+    chartValueMode =
+        snapshot.chartValueMode === 'nominal' ? 'nominal' : 'real';
 
     writeSettings({
         assetMode,
         returnMode,
-        displayMode,
+        chartValueMode,
         depreciatingAssetRate:
             snapshot.depreciatingAssetRate ?? DEFAULT_DEPRECIATING_RETURN,
         flatAssetRate: 0,
@@ -2680,7 +3088,9 @@ function applySettingsSnapshot(snapshot) {
         saveReturnRate:
             snapshot.saveReturnRate ?? DEFAULT_SAVE_RETURN,
         inflationRate: snapshot.inflationRate ?? 3,
-        currentAge: snapshot.currentAge ?? DEFAULT_CURRENT_AGE
+        currentAge: snapshot.currentAge ?? DEFAULT_CURRENT_AGE,
+        retirementAge:
+            snapshot.retirementAge ?? DEFAULT_RETIREMENT_AGE
     });
 
     document.getElementById('assetReturnRate').value =
@@ -2698,8 +3108,27 @@ function applySettingsSnapshot(snapshot) {
     document.getElementById('inflationRate').value =
         snapshot.inflationRate ?? 3;
 
-    document.getElementById('currentAge').value =
-        snapshot.currentAge ?? DEFAULT_CURRENT_AGE;
+    document.getElementById('currentAge').value = String(
+        clampAge(
+            snapshot.currentAge ?? DEFAULT_CURRENT_AGE,
+            MIN_CURRENT_AGE,
+            MAX_AGE,
+            DEFAULT_CURRENT_AGE
+        )
+    );
+
+    const snapshotCurrentAge = getCurrentAge();
+
+    document.getElementById('retirementAge').value = String(
+        clampAge(
+            snapshot.retirementAge ?? DEFAULT_RETIREMENT_AGE,
+            snapshotCurrentAge,
+            MAX_AGE,
+            Math.max(DEFAULT_RETIREMENT_AGE, snapshotCurrentAge)
+        )
+    );
+
+    syncAgeInputs();
 
     updateAssetModeButtons();
     updateModeButtons();
@@ -2921,7 +3350,6 @@ function saveSettings() {
     writeSettings({
         returnMode,
         assetMode,
-        displayMode,
         investReturnRate:
             returnMode === 'invest'
                 ? currentReturn
@@ -2942,7 +3370,10 @@ function saveSettings() {
         inflationRate:
             document.getElementById('inflationRate').value,
         currentAge:
-            document.getElementById('currentAge').value
+            document.getElementById('currentAge').value,
+        retirementAge:
+            document.getElementById('retirementAge').value,
+        chartValueMode
     });
 }
 
@@ -2951,7 +3382,9 @@ function loadSettings() {
 
     returnMode = settings.returnMode;
     assetMode = settings.assetMode;
-    displayMode = normalizeDisplayMode(settings.displayMode);
+    displayMode = 'opportunity';
+    chartValueMode =
+        settings.chartValueMode === 'nominal' ? 'nominal' : 'real';
 
     document.getElementById('returnRate').value =
         returnMode === 'invest'
@@ -2968,8 +3401,25 @@ function loadSettings() {
     document.getElementById('inflationRate').value =
         settings.inflationRate;
 
-    document.getElementById('currentAge').value =
-        settings.currentAge;
+    document.getElementById('currentAge').value = String(
+        clampAge(
+            settings.currentAge,
+            MIN_CURRENT_AGE,
+            MAX_AGE,
+            DEFAULT_CURRENT_AGE
+        )
+    );
+
+    document.getElementById('retirementAge').value = String(
+        clampAge(
+            settings.retirementAge ?? DEFAULT_RETIREMENT_AGE,
+            getCurrentAge(),
+            MAX_AGE,
+            Math.max(DEFAULT_RETIREMENT_AGE, getCurrentAge())
+        )
+    );
+
+    syncAgeInputs();
 
     updateModeButtons();
     updateAssetModeButtons();
@@ -3002,12 +3452,10 @@ function savePurchase() {
     const inflation =
         (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
 
-    const age =
-        parseFloat(document.getElementById('currentAge').value) ||
-        DEFAULT_CURRENT_AGE;
+    syncAgeInputs();
 
-    const yearsToRetirement =
-        Math.max(0, RETIREMENT_AGE - age);
+    const age = getCurrentAge();
+    const yearsToRetirement = getRetirementAge() - age;
 
     const assetRetirementValue = futureValue(
         amount,
@@ -3103,7 +3551,7 @@ function resetAppData() {
         '• Annual return settings (Invest, Save, and Asset types)\n' +
         '• Inflation rate\n' +
         '• All saved projections\n' +
-        '• Your current age\n\n' +
+        '• Your current age and retirement age\n\n' +
         'Are you sure?'
     );
 
@@ -3118,7 +3566,7 @@ function resetAppData() {
     assetMode = 'flat';
     displayMode = 'opportunity';
     selectedLogId = null;
-    document.getElementById('amount').value = 100;
+    document.getElementById('amount').value = DEFAULT_PURCHASE_AMOUNT;
     document.getElementById('description').value = '';
     document.getElementById('logSearch').value = '';
 
@@ -3257,8 +3705,7 @@ function renderLog() {
 [
     'amount',
     'returnRate',
-    'inflationRate',
-    'currentAge'
+    'inflationRate'
 ].forEach(id => {
     document
         .getElementById(id)
@@ -3267,6 +3714,22 @@ function renderLog() {
             calculate();
         });
 });
+
+document
+    .getElementById('currentAge')
+    .addEventListener('input', handleAgeInput);
+
+document
+    .getElementById('currentAge')
+    .addEventListener('blur', () => handleAgeBlur('currentAge'));
+
+document
+    .getElementById('retirementAge')
+    .addEventListener('input', handleAgeInput);
+
+document
+    .getElementById('retirementAge')
+    .addEventListener('blur', () => handleAgeBlur('retirementAge'));
 
 document
     .getElementById('assetReturnRate')
@@ -3307,6 +3770,14 @@ document
 document
     .getElementById('themeToggle')
     .addEventListener('click', toggleTheme);
+
+document
+    .getElementById('chartValueModeReal')
+    .addEventListener('click', () => setChartValueMode('real'));
+
+document
+    .getElementById('chartValueModeNominal')
+    .addEventListener('click', () => setChartValueMode('nominal'));
 
 document
     .getElementById('logSearch')
@@ -3358,6 +3829,7 @@ const NUMBER_INPUT_STEP_LABELS = {
     assetReturnRate: 'asset return',
     returnRate: 'alternative return',
     currentAge: 'current age',
+    retirementAge: 'retirement age',
     inflationRate: 'inflation'
 };
 
