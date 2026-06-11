@@ -16,8 +16,9 @@
 <title>Opportunity Cost</title>
 
 <style>
-:root {
-    color-scheme: light dark;
+:root,
+:root[data-theme="light"] {
+    color-scheme: light;
     --bg: #f2f2f7;
     --card: #ffffff;
     --text: #000000;
@@ -26,15 +27,14 @@
     --shadow: rgba(0,0,0,0.08);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #000000;
-        --card: #1c1c1e;
-        --text: #ffffff;
-        --secondary: #98989d;
-        --accent: #0a84ff;
-        --shadow: rgba(255,255,255,0.05);
-    }
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #000000;
+    --card: #1c1c1e;
+    --text: #ffffff;
+    --secondary: #98989d;
+    --accent: #0a84ff;
+    --shadow: rgba(255,255,255,0.05);
 }
 
 * {
@@ -63,10 +63,89 @@ body {
         sans-serif;
 }
 
-h1 {
-    margin: 0 0 24px;
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    margin: 0;
     font-size: 34px;
     font-weight: 700;
+    flex: 1;
+    min-width: 0;
+}
+
+.theme-toggle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-top: 2px;
+    border: none;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--secondary);
+    box-shadow: 0 2px 8px var(--shadow);
+    cursor: pointer;
+}
+
+.theme-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+.theme-toggle .theme-icon-sun {
+    display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle .theme-icon-moon {
+    display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle .theme-icon-sun {
+    display: block;
+}
+
+.app-layout {
+    display: contents;
+}
+
+.app-column {
+    display: contents;
+}
+
+@media (min-width: 900px) {
+    .page-header {
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .app-layout {
+        display: grid;
+        grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .app-column {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .app-column-inputs {
+        position: sticky;
+        top: max(16px, env(safe-area-inset-top));
+    }
 }
 
 .card {
@@ -82,6 +161,18 @@ label {
     font-size: 14px;
     color: var(--secondary);
     margin-bottom: 8px;
+}
+
+.card > label:first-of-type {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.card-hint {
+    margin: -4px 0 12px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--secondary);
 }
 
 input[type="number"] {
@@ -127,6 +218,58 @@ input[type="text"] {
     font-size: 18px !important;
 }
 
+.number-input-wrap {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.number-input-wrap input[type="number"] {
+    flex: 1;
+    min-width: 0;
+    border-radius: 14px 0 0 14px;
+    -moz-appearance: textfield;
+}
+
+.number-input-wrap input[type="number"]::-webkit-outer-spin-button,
+.number-input-wrap input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.number-stepper {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 0 14px 14px 0;
+    overflow: hidden;
+    background: var(--bg);
+    box-shadow: inset 1px 0 0 rgba(128, 128, 128, 0.2);
+}
+
+.number-stepper button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 22px;
+    padding: 0 10px;
+    border: none;
+    background: var(--bg);
+    color: var(--secondary);
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.number-stepper button:active {
+    background: rgba(128, 128, 128, 0.15);
+}
+
 .age-row {
     grid-column: 1 / -1;
     display: flex;
@@ -166,6 +309,16 @@ input[type="text"] {
     background: var(--accent);
     color: white;
     font-weight: 600;
+}
+
+.segmented-control.compact button {
+    font-size: 13px;
+    padding: 10px 4px;
+}
+
+.asset-type-control,
+.alternative-type-control {
+    margin-bottom: 12px;
 }
 
 .quick-buttons {
@@ -368,6 +521,13 @@ input[type="text"] {
 .log-content {
     flex: 1;
     min-width: 0;
+    cursor: pointer;
+}
+
+.log-item.selected .log-content {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 10px;
 }
 
 .log-description {
@@ -418,6 +578,45 @@ input[type="text"] {
     width: 100%;
     height: auto;
     display: block;
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+}
+
+.chart-hover {
+    pointer-events: none;
+}
+
+.chart-hover-line {
+    stroke: var(--secondary);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+    opacity: 0.6;
+}
+
+.chart-hover-dot {
+    stroke: var(--card);
+    stroke-width: 2;
+}
+
+.chart-hover-label-bg {
+    fill: var(--card);
+    stroke: rgba(128, 128, 128, 0.25);
+    stroke-width: 1;
+}
+
+.chart-hover-label {
+    fill: var(--text);
+    font-size: 10px;
+    font-weight: 600;
+    text-anchor: middle;
+}
+
+.chart-hover-label-value {
+    fill: var(--secondary);
+    font-size: 10px;
+    font-weight: 500;
+    text-anchor: middle;
 }
 
 .reset-button {
@@ -431,11 +630,204 @@ input[type="text"] {
     font-weight: 600;
     cursor: pointer;
 }
+
+.reset-button-desktop {
+    display: none;
+}
+
+.privacy-link-desktop {
+    display: none;
+}
+
+@media (min-width: 900px) {
+    .reset-button-desktop {
+        display: block;
+    }
+
+    .reset-button-mobile {
+        display: none;
+    }
+
+    .privacy-link-desktop {
+        display: block;
+    }
+
+    .privacy-link-mobile {
+        display: none;
+    }
+}
+
+.privacy-link {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px 0;
+    border: none;
+    background: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.privacy-overlay[hidden] {
+    display: none !important;
+}
+
+.privacy-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+.privacy-backdrop {
+    position: absolute;
+    inset: 0;
+    border: none;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+}
+
+.privacy-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.privacy-header {
+    position: relative;
+    flex-shrink: 0;
+    padding:
+        max(20px, env(safe-area-inset-top))
+        56px
+        16px
+        20px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.privacy-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.privacy-close {
+    position: absolute;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--secondary);
+    box-shadow: 0 2px 8px var(--shadow);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.privacy-body {
+    flex: 1;
+    overflow-y: auto;
+    padding:
+        20px
+        max(20px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.privacy-body p {
+    margin: 0 0 14px;
+}
+
+.privacy-body p:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 899px) {
+    .privacy-backdrop {
+        display: none;
+    }
+
+    .privacy-panel {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+    }
+}
+
+@media (min-width: 900px) {
+    .privacy-overlay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    .privacy-panel {
+        z-index: 1;
+        width: 100%;
+        max-width: 440px;
+        max-height: min(80vh, 560px);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+    }
+
+    .privacy-header {
+        padding:
+            20px
+            56px
+            16px
+            20px;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+    }
+
+    .privacy-close {
+        top: 14px;
+        right: 14px;
+    }
+
+    .privacy-body {
+        padding: 20px 24px 24px;
+    }
+}
 </style>
 </head>
 <body>
 
-<h1>Opportunity Cost Calculator</h1>
+<div class="page-header">
+    <h1>Opportunity Cost Calculator</h1>
+    <button
+        id="themeToggle"
+        class="theme-toggle"
+        type="button"
+        aria-label="Switch to dark mode"
+    >
+        <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+    </button>
+</div>
+
+<div class="app-layout">
+<div class="app-column app-column-inputs">
 
 <div class="card">
     <label>Purchase Price ($)</label>
@@ -451,46 +843,90 @@ input[type="text"] {
 </div>
 
 <div class="card">
+    <label>Asset</label>
+    <p class="card-hint">
+        How will this asset’s value change after you buy it?
+    </p>
+    <div class="segmented-control asset-type-control compact">
+        <button id="assetDepreciating" type="button">
+            Depreciating Asset
+        </button>
+        <button id="assetFlat" type="button" class="active">
+            No Change
+        </button>
+        <button id="assetAppreciating" type="button">
+            Appreciating Asset
+        </button>
+    </div>
+
+    <label>Asset Return (%)</label>
+    <input id="assetReturnRate" class="small-input" type="number" value="0" step="1">
+</div>
+
+<div class="card">
+    <label>Alternative</label>
+    <p class="card-hint">
+        How much would the money be worth if you saved or invested it instead?
+    </p>
+    <div class="segmented-control alternative-type-control">
+        <button id="modeInvest" type="button" class="active">
+            Invest
+        </button>
+        <button id="modeSave" type="button">
+            Save
+        </button>
+    </div>
+
+    <label>Alternative Return (%)</label>
+    <input id="returnRate" class="small-input" type="number" value="9" step="1">
+</div>
+
+<div class="card">
+    <label>Timeline &amp; Inflation</label>
     <div class="settings-grid">
         <div>
-            <label>Annual Return (%)</label>
-            <input id="returnRate" class="small-input" type="number" value="9" step="0.1">
+            <label>Your Current Age</label>
+            <input id="currentAge" class="small-input" type="number" value="25" step="1" min="0">
         </div>
 
         <div>
             <label>Inflation (%)</label>
-            <input id="inflationRate" class="small-input" type="number" value="3">
-        </div>
-
-        <div class="age-row">
-            <div class="age-input">
-                <label>Current Age</label>
-                <input id="currentAge" class="small-input" type="number" value="25">
-            </div>
-
-            <div class="mode-toggle">
-                <label>Return Type</label>
-                <div class="segmented-control">
-                    <button id="modeInvest" type="button" class="active">
-                        Invest
-                    </button>
-                    <button id="modeSave" type="button">
-                        Save
-                    </button>
-                </div>
-            </div>
+            <input id="inflationRate" class="small-input" type="number" value="3" step="1">
         </div>
     </div>
 </div>
 
+<button
+    id="resetButton"
+    class="reset-button reset-button-desktop"
+    type="button"
+    onclick="resetAppData()"
+>
+    Reset All Data
+</button>
+
+<button
+    class="privacy-link privacy-link-desktop"
+    type="button"
+    onclick="openPrivacyPolicy()"
+>
+    Privacy Policy
+</button>
+
+</div>
+<div class="app-column app-column-results">
+
 <div class="card">
     <label>Display</label>
-    <div class="segmented-control display-mode-control">
+    <div class="segmented-control display-mode-control compact">
+        <button id="modeWorthAsset" type="button">
+            Worth of Asset
+        </button>
         <button id="modeOpportunityCost" type="button" class="active">
             Opportunity Cost
         </button>
-        <button id="modeWorth" type="button">
-            Worth
+        <button id="modeWorthAlt" type="button">
+            Worth of Alternative
         </button>
     </div>
 
@@ -564,14 +1000,19 @@ input[type="text"] {
 
     <div class="row">
         <input id="description" type="text" placeholder="Headphones">
-        <button class="primary-button" onclick="savePurchase()">
+        <button
+            id="savePurchase"
+            class="primary-button"
+            type="button"
+            onclick="savePurchase()"
+        >
             Save
         </button>
     </div>
 </div>
 
 <div class="card">
-    <label>Avoided Purchases</label>
+    <label>Saved Projections</label>
     <input
         id="logSearch"
         class="search-input"
@@ -581,33 +1022,287 @@ input[type="text"] {
         enterkeyhint="search"
     >
     <div id="purchaseLog" class="empty">
-        No saved purchases.
+        No saved projections.
     </div>
 </div>
 
+</div>
+
 <button
-    id="resetButton"
-    class="reset-button"
+    class="reset-button reset-button-mobile"
     type="button"
     onclick="resetAppData()"
 >
     Reset All Data
 </button>
 
+<button
+    class="privacy-link privacy-link-mobile"
+    type="button"
+    onclick="openPrivacyPolicy()"
+>
+    Privacy Policy
+</button>
+</div>
+
+<div id="privacyOverlay" class="privacy-overlay" hidden>
+    <button
+        class="privacy-backdrop"
+        type="button"
+        aria-label="Close privacy policy"
+        onclick="closePrivacyPolicy()"
+    ></button>
+    <div
+        class="privacy-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="privacyTitle"
+    >
+        <div class="privacy-header">
+            <h2 id="privacyTitle">Privacy Policy</h2>
+            <button
+                class="privacy-close"
+                type="button"
+                aria-label="Close"
+                onclick="closePrivacyPolicy()"
+            >
+                ×
+            </button>
+        </div>
+        <div class="privacy-body">
+            <p>
+                Opportunity Cost Calculator stores everything on your device only.
+                Your purchase amounts, settings, and saved projections live in your
+                browser’s local storage. Nothing is uploaded to any servers or shared
+                with third parties.
+            </p>
+            <p>
+                You can install this app and use it without an internet connection
+                after the first visit. Calculations run entirely on your device.
+            </p>
+            <p>
+                I do not collect analytics, telemetry, or usage data. No account
+                is required.
+            </p>
+            <p>
+                To erase all stored data at any time, use the
+                <strong>Reset All Data</strong> button. That permanently clears
+                your settings and saved projections from this device.
+            </p>
+        </div>
+    </div>
+</div>
+
 <script>
 const RETIREMENT_AGE = 65;
 const DEFAULT_CURRENT_AGE = 25;
 const DEFAULT_INVEST_RETURN = 9;
 const DEFAULT_SAVE_RETURN = 3.2;
+const DEFAULT_DEPRECIATING_RETURN = -5;
+const DEFAULT_FLAT_RETURN = 0;
+const DEFAULT_APPRECIATING_RETURN = 5;
 
 let returnMode = 'invest';
+let assetMode = 'flat';
 let displayMode = 'opportunity';
+let selectedLogId = null;
+let chartHoverState = null;
+let chartHoverBound = false;
+
+const UI_TOOLTIPS = {
+    amount:
+        'The dollar amount you are considering spending on this asset or purchase.',
+    quickAdd:
+        'Add this amount to the purchase price.',
+    assetDepreciating:
+        'Treat the asset as losing value over time. Default annual return is −5%.',
+    assetFlat:
+        'No change in nominal value (locked at 0%). Edit the return to switch to depreciating or appreciating.',
+    assetAppreciating:
+        'Treat the asset as gaining value over time. Default annual return is +5%.',
+    assetReturnRate:
+        'Expected annual change in the asset’s value. Negative for depreciation (e.g. a car). After-inflation columns adjust this using the shared inflation rate.',
+    currentAge:
+        'Your age today. Used with retirement age 65 to calculate years until retirement.',
+    modeInvest:
+        'Compare against investing in growth assets. Default alternative return is 9%.',
+    modeSave:
+        'Compare against saving in low-risk accounts. Default alternative return is 3.2%.',
+    returnRate:
+        'Expected annual return for the selected alternative (Invest or Save). After-inflation results use this together with the inflation rate.',
+    inflationRate:
+        'Expected annual inflation. Applied to both the asset and the alternative to show after-inflation values in today’s purchasing power.',
+    modeOpportunityCost:
+        'Show how much more the alternative would be worth than the asset. Shown in red; $0 when the asset is ahead.',
+    modeWorthAlt:
+        'Show what the alternative investment would be worth over time.',
+    modeWorthAsset:
+        'Show what the asset or purchase would be worth over time at its return rate.',
+    resultHeaderNominal:
+        'Values compounded at the stated annual returns, without adjusting for inflation.',
+    resultHeaderInflation:
+        'Values adjusted for inflation so you can compare in today’s purchasing power.',
+    growthChart:
+        'Projected value over time using after-inflation returns. Hover or drag along the chart to inspect a year and value.',
+    description:
+        'Optional label for this projection in your saved projections log.',
+    savePurchase:
+        'Save this projection to the log using the current amount and settings.',
+    logSearch:
+        'Filter saved projections by description or date (e.g. jun, 2026, 10/06/2026).',
+    deletePurchase:
+        'Remove this projection from the log.',
+    logEntry:
+        'Restore this projection’s amount and settings in the calculator, table, and chart.',
+    resetButton:
+        'Permanently clear all saved settings and saved projections.',
+    themeToggle:
+        'Switch between light and dark mode.'
+};
+
+function applyTooltips() {
+    const labelPairs = [
+        ['amount'],
+        ['assetReturnRate'],
+        ['currentAge'],
+        ['returnRate'],
+        ['inflationRate'],
+        ['description'],
+        ['logSearch']
+    ];
+
+    labelPairs.forEach(([id]) => {
+        const text = UI_TOOLTIPS[id];
+        const input = document.getElementById(id);
+
+        if (!input || !text) {
+            return;
+        }
+
+        input.title = text;
+
+        const label = input.closest('div')?.querySelector('label');
+
+        if (label) {
+            label.title = text;
+        }
+    });
+
+    const idButtons = [
+        'assetDepreciating',
+        'assetFlat',
+        'assetAppreciating',
+        'modeInvest',
+        'modeSave',
+        'modeOpportunityCost',
+        'modeWorthAlt',
+        'modeWorthAsset',
+        'savePurchase',
+        'resetButton',
+        'themeToggle'
+    ];
+
+    idButtons.forEach(id => {
+        const el = document.getElementById(id);
+
+        if (el && UI_TOOLTIPS[id]) {
+            el.title = UI_TOOLTIPS[id];
+        }
+    });
+
+    document.querySelectorAll('.reset-button').forEach(button => {
+        button.title = UI_TOOLTIPS.resetButton;
+    });
+
+    document.querySelectorAll('.quick-buttons button').forEach(button => {
+        button.title = UI_TOOLTIPS.quickAdd;
+    });
+
+    const nominalHeader =
+        document.querySelector('.result-header-nominal');
+
+    if (nominalHeader) {
+        nominalHeader.title = UI_TOOLTIPS.resultHeaderNominal;
+    }
+
+    const inflationHeader =
+        document.querySelector('.result-header-inflation');
+
+    if (inflationHeader) {
+        inflationHeader.title = UI_TOOLTIPS.resultHeaderInflation;
+    }
+
+    const chart = document.getElementById('growthChart');
+
+    if (chart) {
+        chart.title = UI_TOOLTIPS.growthChart;
+    }
+
+    const retirementNominalLabel = document.querySelector(
+        '.big-number-nominal .label'
+    );
+
+    if (retirementNominalLabel) {
+        retirementNominalLabel.title = UI_TOOLTIPS.resultHeaderNominal;
+    }
+
+    const retirementInflationLabel = document.getElementById(
+        'afterInflationNote'
+    );
+
+    if (retirementInflationLabel) {
+        retirementInflationLabel.title = UI_TOOLTIPS.resultHeaderInflation;
+    }
+}
+
+function getColorThemePreference() {
+    const settings = readSettings();
+
+    if (
+        settings.colorTheme === 'light' ||
+        settings.colorTheme === 'dark'
+    ) {
+        return settings.colorTheme;
+    }
+
+    return null;
+}
+
+function getEffectiveTheme() {
+    const preference = getColorThemePreference();
+
+    if (preference) {
+        return preference;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+}
+
+function updateThemeToggleUI() {
+    const toggle = document.getElementById('themeToggle');
+
+    if (!toggle) {
+        return;
+    }
+
+    const theme = getEffectiveTheme();
+
+    toggle.setAttribute(
+        'aria-label',
+        theme === 'dark'
+            ? 'Switch to light mode'
+            : 'Switch to dark mode'
+    );
+}
 
 function applyTheme() {
-    const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = getEffectiveTheme();
+    const dark = theme === 'dark';
 
-    document.documentElement.style.colorScheme =
-        dark ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.style.colorScheme = theme;
 
     document
         .querySelector('meta[name="theme-color"]')
@@ -619,13 +1314,29 @@ function applyTheme() {
             'content',
             dark ? 'black-translucent' : 'default'
         );
+
+    updateThemeToggleUI();
 }
 
-applyTheme();
+function toggleTheme() {
+    const nextTheme =
+        getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+
+    writeSettings({ colorTheme: nextTheme });
+    applyTheme();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
 
 window
     .matchMedia('(prefers-color-scheme: dark)')
-    .addEventListener('change', applyTheme);
+    .addEventListener('change', () => {
+        if (!getColorThemePreference()) {
+            applyTheme();
+        }
+    });
 
 function currency(v) {
     return new Intl.NumberFormat(
@@ -648,26 +1359,38 @@ function futureValueNominal(pv, rate, years) {
     return pv * Math.pow(1 + rate, years);
 }
 
-function opportunityCostDisplay(amount, futureValue) {
-    return amount - futureValue;
+function comparisonDelta(assetFuture, altFuture) {
+    return Math.max(0, altFuture - assetFuture);
 }
 
-function formatProjectionValue(amount, futureValue) {
-    if (displayMode === 'worth') {
+function formatProjectionValue(assetFuture, altFuture) {
+    if (displayMode === 'worth-alt') {
         return {
-            text: currency(futureValue),
+            text: currency(altFuture),
+            isOpportunityCost: false
+        };
+    }
+
+    if (displayMode === 'worth-asset') {
+        return {
+            text: currency(assetFuture),
             isOpportunityCost: false
         };
     }
 
     return {
-        text: currency(opportunityCostDisplay(amount, futureValue)),
+        text: currency(comparisonDelta(assetFuture, altFuture)),
         isOpportunityCost: true
     };
 }
 
-function applyProjectionValue(element, amount, futureValue, isNominal = false) {
-    const display = formatProjectionValue(amount, futureValue);
+function applyProjectionValue(
+    element,
+    assetFuture,
+    altFuture,
+    isNominal = false
+) {
+    const display = formatProjectionValue(assetFuture, altFuture);
 
     element.textContent = display.text;
     element.classList.toggle(
@@ -681,10 +1404,6 @@ function applyProjectionValue(element, amount, futureValue, isNominal = false) {
 }
 
 function compactChartLabel(value) {
-    if (value < 0) {
-        return '-' + compactCurrency(-value);
-    }
-
     return compactCurrency(value);
 }
 
@@ -726,20 +1445,37 @@ function getChartMilestones(yearsToRetirement) {
     });
 }
 
-function projectionValue(amount, rate, inflation, years, nominal = false) {
-    const future = nominal
-        ? futureValueNominal(amount, rate, years)
-        : futureValue(amount, rate, inflation, years);
+function projectionValue(
+    amount,
+    assetRate,
+    altRate,
+    inflation,
+    years,
+    nominal = false
+) {
+    const assetFuture = nominal
+        ? futureValueNominal(amount, assetRate, years)
+        : futureValue(amount, assetRate, inflation, years);
+    const altFuture = nominal
+        ? futureValueNominal(amount, altRate, years)
+        : futureValue(amount, altRate, inflation, years);
 
-    return displayMode === 'worth'
-        ? future
-        : opportunityCostDisplay(amount, future);
+    if (displayMode === 'worth-alt') {
+        return altFuture;
+    }
+
+    if (displayMode === 'worth-asset') {
+        return assetFuture;
+    }
+
+    return comparisonDelta(assetFuture, altFuture);
 }
 
 function filterOverlappingMilestones(
     milestones,
     amount,
-    rate,
+    assetRate,
+    altRate,
     inflation,
     y,
     minLabelGap = 14
@@ -747,7 +1483,8 @@ function filterOverlappingMilestones(
     const withPositions = milestones.map(milestone => {
         const value = projectionValue(
             amount,
-            rate,
+            assetRate,
+            altRate,
             inflation,
             milestone.years
         );
@@ -777,7 +1514,157 @@ function filterOverlappingMilestones(
     return kept;
 }
 
-function drawChart(amount, rate, inflation, yearsToRetirement) {
+function formatChartHoverYear(year) {
+    if (year === 0) {
+        return 'Now';
+    }
+
+    if (year === 1) {
+        return '1 year';
+    }
+
+    return `${year} years`;
+}
+
+function getChartSVGPoint(clientX, clientY) {
+    const svg = document.getElementById('growthChart');
+    const point = svg.createSVGPoint();
+
+    point.x = clientX;
+    point.y = clientY;
+
+    const matrix = svg.getScreenCTM();
+
+    if (!matrix) {
+        return null;
+    }
+
+    return point.matrixTransform(matrix.inverse());
+}
+
+function updateChartHover(year) {
+    const hover = document.getElementById('chartHover');
+
+    if (!hover || !chartHoverState || year === null) {
+        if (hover) {
+            hover.setAttribute('visibility', 'hidden');
+        }
+
+        return;
+    }
+
+    const state = chartHoverState;
+    const value = projectionValue(
+        state.amount,
+        state.assetRate,
+        state.altRate,
+        state.inflation,
+        year
+    );
+    const cx = state.x(year);
+    const cy = state.y(value);
+    const dot = document.getElementById('chartHoverDot');
+    const line = document.getElementById('chartHoverLine');
+    const labelBg = document.getElementById('chartHoverLabelBg');
+    const yearText = document.getElementById('chartHoverYear');
+    const valueText = document.getElementById('chartHoverValue');
+
+    dot.setAttribute('cx', cx);
+    dot.setAttribute('cy', cy);
+    dot.setAttribute('fill', state.chartAccent);
+
+    line.setAttribute('x1', cx);
+    line.setAttribute('y1', state.baselineY);
+    line.setAttribute('x2', cx);
+    line.setAttribute('y2', cy);
+
+    yearText.textContent = formatChartHoverYear(year);
+    valueText.textContent = compactChartLabel(value);
+
+    const tooltipW = 92;
+    const tooltipH = 34;
+    let tooltipX = cx - tooltipW / 2;
+
+    tooltipX = Math.max(
+        state.pad.left,
+        Math.min(tooltipX, state.pad.left + state.plotW - tooltipW)
+    );
+
+    let tooltipY = cy - tooltipH - 10;
+
+    if (tooltipY < state.pad.top) {
+        tooltipY = Math.min(cy + 12, state.pad.top + state.plotH - tooltipH);
+    }
+
+    labelBg.setAttribute('x', tooltipX);
+    labelBg.setAttribute('y', tooltipY);
+    labelBg.setAttribute('width', tooltipW);
+    labelBg.setAttribute('height', tooltipH);
+
+    yearText.setAttribute('x', tooltipX + tooltipW / 2);
+    yearText.setAttribute('y', tooltipY + 13);
+
+    valueText.setAttribute('x', tooltipX + tooltipW / 2);
+    valueText.setAttribute('y', tooltipY + 27);
+
+    hover.setAttribute('visibility', 'visible');
+}
+
+function handleChartPointerMove(event) {
+    if (!chartHoverState) {
+        return;
+    }
+
+    const point = getChartSVGPoint(event.clientX, event.clientY);
+
+    if (!point) {
+        updateChartHover(null);
+        return;
+    }
+
+    const { pad, plotW, maxYears } = chartHoverState;
+
+    if (
+        point.x < pad.left ||
+        point.x > pad.left + plotW ||
+        point.y < pad.top ||
+        point.y > pad.top + chartHoverState.plotH
+    ) {
+        updateChartHover(null);
+        return;
+    }
+
+    const yearFraction = ((point.x - pad.left) / plotW) * maxYears;
+    const year = Math.round(
+        Math.max(0, Math.min(maxYears, yearFraction))
+    );
+
+    updateChartHover(year);
+}
+
+function handleChartPointerLeave() {
+    updateChartHover(null);
+}
+
+function setupChartHover() {
+    if (chartHoverBound) {
+        return;
+    }
+
+    const svg = document.getElementById('growthChart');
+
+    svg.addEventListener('pointermove', handleChartPointerMove);
+    svg.addEventListener('pointerleave', handleChartPointerLeave);
+    chartHoverBound = true;
+}
+
+function drawChart(
+    amount,
+    assetRate,
+    altRate,
+    inflation,
+    yearsToRetirement
+) {
     const svg = document.getElementById('growthChart');
     const milestones = getChartMilestones(yearsToRetirement);
     const maxYears = Math.max(50, yearsToRetirement, 1);
@@ -786,25 +1673,17 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
     const values = [];
 
     for (let year = 0; year <= maxYears; year++) {
-        values.push(projectionValue(amount, rate, inflation, year));
+        values.push(
+            projectionValue(amount, assetRate, altRate, inflation, year)
+        );
     }
 
-    let minValue;
-    let maxValue;
-
-    if (isOpportunityCost) {
-        minValue = Math.min(...values, 0);
-        maxValue = 0;
-    } else {
-        minValue = 0;
-        maxValue = Math.max(...values, 1);
-    }
+    const minValue = 0;
+    const maxValue = Math.max(...values, 1);
 
     const width = 340;
     const height = 200;
-    const pad = isOpportunityCost
-        ? { top: 28, right: 12, bottom: 14, left: 48 }
-        : { top: 14, right: 12, bottom: 30, left: 48 };
+    const pad = { top: 14, right: 12, bottom: 30, left: 48 };
     const plotW = width - pad.left - pad.right;
     const plotH = height - pad.top - pad.bottom;
     const valueRange = maxValue - minValue || 1;
@@ -816,20 +1695,26 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
     let linePath = '';
 
     for (let year = 0; year <= maxYears; year++) {
-        const value = projectionValue(amount, rate, inflation, year);
+        const value = projectionValue(
+            amount,
+            assetRate,
+            altRate,
+            inflation,
+            year
+        );
         linePath += `${year === 0 ? 'M' : 'L'} ${x(year)} ${y(value)} `;
     }
 
-    const baselineY = y(0);
-    const milestoneLabelY = isOpportunityCost ? baselineY - 6 : height - 8;
-    const areaPath = isOpportunityCost
-        ? `${linePath} L ${x(maxYears)} ${baselineY} L ${x(0)} ${baselineY} Z`
-        : `${linePath} L ${x(maxYears)} ${y(minValue)} L ${x(0)} ${y(minValue)} Z`;
+    const baselineY = y(minValue);
+    const milestoneLabelY = height - 8;
+    const areaPath =
+        `${linePath} L ${x(maxYears)} ${baselineY} L ${x(0)} ${baselineY} Z`;
 
     const visibleMilestones = filterOverlappingMilestones(
         milestones,
         amount,
-        rate,
+        assetRate,
+        altRate,
         inflation,
         y
     );
@@ -888,6 +1773,21 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
         `;
     }).join('');
 
+    chartHoverState = {
+        amount,
+        assetRate,
+        altRate,
+        inflation,
+        pad,
+        plotW,
+        plotH,
+        maxYears,
+        baselineY,
+        x,
+        y,
+        chartAccent
+    };
+
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     svg.innerHTML = `
         <line
@@ -912,14 +1812,35 @@ function drawChart(amount, rate, inflation, yearsToRetirement) {
             stroke-linecap="round"
             stroke-linejoin="round"
         />
+        <g id="chartHover" class="chart-hover" visibility="hidden">
+            <line id="chartHoverLine" class="chart-hover-line"/>
+            <circle id="chartHoverDot" class="chart-hover-dot" r="5"/>
+            <rect id="chartHoverLabelBg" class="chart-hover-label-bg" rx="6" ry="6"/>
+            <text id="chartHoverYear" class="chart-hover-label"/>
+            <text id="chartHoverValue" class="chart-hover-label-value"/>
+        </g>
+        <rect
+            id="chartPlotHit"
+            x="${pad.left}"
+            y="${pad.top}"
+            width="${plotW}"
+            height="${plotH}"
+            fill="transparent"
+        />
     `;
+
+    updateChartHover(null);
 }
 
 function calculate() {
     const amount =
         parseFloat(document.getElementById('amount').value) || 0;
 
-    const rate =
+    const assetRate =
+        (parseFloat(document.getElementById('assetReturnRate').value) || 0) /
+        100;
+
+    const altRate =
         (parseFloat(document.getElementById('returnRate').value) || 0) / 100;
 
     const inflation =
@@ -938,15 +1859,15 @@ function calculate() {
     ].forEach(([years, id]) => {
         applyProjectionValue(
             document.getElementById(id + 'nom'),
-            amount,
-            futureValueNominal(amount, rate, years),
+            futureValueNominal(amount, assetRate, years),
+            futureValueNominal(amount, altRate, years),
             true
         );
 
         applyProjectionValue(
             document.getElementById(id),
-            amount,
-            futureValue(amount, rate, inflation, years)
+            futureValue(amount, assetRate, inflation, years),
+            futureValue(amount, altRate, inflation, years)
         );
     });
 
@@ -955,15 +1876,15 @@ function calculate() {
 
     applyProjectionValue(
         document.getElementById('retirementNominalValue'),
-        amount,
-        futureValueNominal(amount, rate, yearsToRetirement),
+        futureValueNominal(amount, assetRate, yearsToRetirement),
+        futureValueNominal(amount, altRate, yearsToRetirement),
         true
     );
 
     applyProjectionValue(
         document.getElementById('retirementValue'),
-        amount,
-        futureValue(amount, rate, inflation, yearsToRetirement)
+        futureValue(amount, assetRate, inflation, yearsToRetirement),
+        futureValue(amount, altRate, inflation, yearsToRetirement)
     );
 
     updateDisplayModeUI();
@@ -974,7 +1895,13 @@ function calculate() {
     updateInflationUI(inflationRate);
     updateRetirementLayout();
 
-    drawChart(amount, rate, inflation, yearsToRetirement);
+    drawChart(
+        amount,
+        assetRate,
+        altRate,
+        inflation,
+        yearsToRetirement
+    );
 
     saveSettings();
 }
@@ -1008,6 +1935,8 @@ function updateRetirementLayout() {
 }
 
 function addAmount(value) {
+    selectedLogId = null;
+
     const input = document.getElementById('amount');
     input.value =
         (parseFloat(input.value) || 0) + value;
@@ -1022,9 +1951,13 @@ function addAmount(value) {
 function readSettings() {
     const defaults = {
         returnMode: 'invest',
+        assetMode: 'flat',
         displayMode: 'opportunity',
         investReturnRate: DEFAULT_INVEST_RETURN,
         saveReturnRate: DEFAULT_SAVE_RETURN,
+        depreciatingAssetRate: DEFAULT_DEPRECIATING_RETURN,
+        flatAssetRate: DEFAULT_FLAT_RETURN,
+        appreciatingAssetRate: DEFAULT_APPRECIATING_RETURN,
         inflationRate: 3,
         currentAge: DEFAULT_CURRENT_AGE
     };
@@ -1040,6 +1973,7 @@ function readSettings() {
     return {
         ...defaults,
         ...parsed,
+        displayMode: normalizeDisplayMode(parsed.displayMode),
         investReturnRate:
             parsed.investReturnRate ??
             parsed.returnRate ??
@@ -1073,22 +2007,62 @@ function updateModeButtons() {
         .classList.toggle('active', returnMode === 'save');
 }
 
-function updateDisplayModeUI() {
-    document.getElementById('retirementTitle').textContent =
-        displayMode === 'worth'
-            ? 'Worth At Retirement (Age 65)'
-            : 'Opportunity Cost At Retirement (Age 65)';
+function updateAssetModeButtons() {
+    document
+        .getElementById('assetDepreciating')
+        .classList.toggle('active', assetMode === 'depreciating');
 
     document
-        .getElementById('modeWorth')
-        .classList.toggle('active', displayMode === 'worth');
+        .getElementById('assetFlat')
+        .classList.toggle('active', assetMode === 'flat');
+
+    document
+        .getElementById('assetAppreciating')
+        .classList.toggle('active', assetMode === 'appreciating');
+}
+
+function normalizeDisplayMode(mode) {
+    if (mode === 'worth') {
+        return 'worth-alt';
+    }
+
+    if (
+        mode === 'opportunity' ||
+        mode === 'worth-alt' ||
+        mode === 'worth-asset'
+    ) {
+        return mode;
+    }
+
+    return 'opportunity';
+}
+
+function updateDisplayModeUI() {
+    const titles = {
+        opportunity: 'Opportunity Cost At Retirement (Age 65)',
+        'worth-alt': 'Worth of Alternative At Retirement (Age 65)',
+        'worth-asset': 'Worth of Asset At Retirement (Age 65)'
+    };
+
+    document.getElementById('retirementTitle').textContent =
+        titles[displayMode];
 
     document
         .getElementById('modeOpportunityCost')
         .classList.toggle('active', displayMode === 'opportunity');
+
+    document
+        .getElementById('modeWorthAlt')
+        .classList.toggle('active', displayMode === 'worth-alt');
+
+    document
+        .getElementById('modeWorthAsset')
+        .classList.toggle('active', displayMode === 'worth-asset');
 }
 
 function setDisplayMode(mode) {
+    selectedLogId = null;
+
     displayMode = mode;
 
     writeSettings({ displayMode: mode });
@@ -1101,7 +2075,253 @@ function setDisplayMode(mode) {
     }
 }
 
+function captureSettingsSnapshot() {
+    const settings = readSettings();
+    const currentReturn =
+        document.getElementById('returnRate').value;
+    const currentAssetReturn =
+        document.getElementById('assetReturnRate').value;
+
+    return {
+        assetMode,
+        returnMode,
+        displayMode: normalizeDisplayMode(displayMode),
+        depreciatingAssetRate:
+            assetMode === 'depreciating'
+                ? currentAssetReturn
+                : settings.depreciatingAssetRate,
+        flatAssetRate: 0,
+        appreciatingAssetRate:
+            assetMode === 'appreciating'
+                ? currentAssetReturn
+                : settings.appreciatingAssetRate,
+        investReturnRate:
+            returnMode === 'invest'
+                ? currentReturn
+                : settings.investReturnRate,
+        saveReturnRate:
+            returnMode === 'save'
+                ? currentReturn
+                : settings.saveReturnRate,
+        inflationRate:
+            document.getElementById('inflationRate').value,
+        currentAge:
+            document.getElementById('currentAge').value
+    };
+}
+
+function applySettingsSnapshot(snapshot) {
+    if (!snapshot) {
+        return;
+    }
+
+    assetMode = snapshot.assetMode ?? 'flat';
+    returnMode = snapshot.returnMode ?? 'invest';
+    displayMode = normalizeDisplayMode(
+        snapshot.displayMode ?? 'opportunity'
+    );
+
+    writeSettings({
+        assetMode,
+        returnMode,
+        displayMode,
+        depreciatingAssetRate:
+            snapshot.depreciatingAssetRate ?? DEFAULT_DEPRECIATING_RETURN,
+        flatAssetRate: 0,
+        appreciatingAssetRate:
+            snapshot.appreciatingAssetRate ?? DEFAULT_APPRECIATING_RETURN,
+        investReturnRate:
+            snapshot.investReturnRate ?? DEFAULT_INVEST_RETURN,
+        saveReturnRate:
+            snapshot.saveReturnRate ?? DEFAULT_SAVE_RETURN,
+        inflationRate: snapshot.inflationRate ?? 3,
+        currentAge: snapshot.currentAge ?? DEFAULT_CURRENT_AGE
+    });
+
+    document.getElementById('assetReturnRate').value =
+        assetMode === 'depreciating'
+            ? snapshot.depreciatingAssetRate ?? DEFAULT_DEPRECIATING_RETURN
+            : assetMode === 'appreciating'
+                ? snapshot.appreciatingAssetRate ?? DEFAULT_APPRECIATING_RETURN
+                : 0;
+
+    document.getElementById('returnRate').value =
+        returnMode === 'invest'
+            ? snapshot.investReturnRate ?? DEFAULT_INVEST_RETURN
+            : snapshot.saveReturnRate ?? DEFAULT_SAVE_RETURN;
+
+    document.getElementById('inflationRate').value =
+        snapshot.inflationRate ?? 3;
+
+    document.getElementById('currentAge').value =
+        snapshot.currentAge ?? DEFAULT_CURRENT_AGE;
+
+    updateAssetModeButtons();
+    updateModeButtons();
+    updateDisplayModeUI();
+}
+
+function loadLogEntry(id) {
+    const item = getLog().find(entry => itemId(entry) === id);
+
+    if (!item) {
+        return;
+    }
+
+    selectedLogId = id;
+
+    document.getElementById('amount').value = item.amount;
+    document.getElementById('description').value = item.description;
+
+    if (item.settings) {
+        applySettingsSnapshot(item.settings);
+    }
+
+    calculate();
+    renderLog();
+
+    document
+        .getElementById('retirementValues')
+        ?.closest('.card')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
+function switchAssetModeFromReturnEdit(mode, rate) {
+    const settings = readSettings();
+    const previousMode = assetMode;
+
+    writeSettings({
+        assetMode: mode,
+        flatAssetRate: 0,
+        depreciatingAssetRate:
+            mode === 'depreciating'
+                ? rate
+                : previousMode === 'depreciating'
+                    ? DEFAULT_DEPRECIATING_RETURN
+                    : settings.depreciatingAssetRate,
+        appreciatingAssetRate:
+            mode === 'appreciating'
+                ? rate
+                : previousMode === 'appreciating'
+                    ? DEFAULT_APPRECIATING_RETURN
+                    : settings.appreciatingAssetRate
+    });
+
+    assetMode = mode;
+    document.getElementById('assetReturnRate').value = rate;
+    updateAssetModeButtons();
+    calculate();
+}
+
+function switchToFlatFromReturnEdit() {
+    const settings = readSettings();
+
+    writeSettings({
+        assetMode: 'flat',
+        flatAssetRate: 0,
+        depreciatingAssetRate: settings.depreciatingAssetRate,
+        appreciatingAssetRate: settings.appreciatingAssetRate
+    });
+
+    assetMode = 'flat';
+    document.getElementById('assetReturnRate').value = 0;
+    updateAssetModeButtons();
+    calculate();
+}
+
+function handleAssetReturnInput() {
+    selectedLogId = null;
+
+    const input = document.getElementById('assetReturnRate');
+    const raw = input.value;
+
+    if (raw === '' || raw === '-') {
+        calculate();
+        return;
+    }
+
+    const rate = parseFloat(raw);
+
+    if (Number.isNaN(rate)) {
+        calculate();
+        return;
+    }
+
+    if (rate === 0) {
+        if (assetMode === 'appreciating' || assetMode === 'depreciating') {
+            switchToFlatFromReturnEdit();
+            return;
+        }
+
+        input.value = 0;
+        calculate();
+        return;
+    }
+
+    if (rate < 0) {
+        if (assetMode !== 'depreciating') {
+            switchAssetModeFromReturnEdit('depreciating', rate);
+            return;
+        }
+
+        calculate();
+        return;
+    }
+
+    if (assetMode !== 'appreciating') {
+        switchAssetModeFromReturnEdit('appreciating', rate);
+        return;
+    }
+
+    calculate();
+}
+
+function setAssetMode(mode) {
+    selectedLogId = null;
+
+    const settings = readSettings();
+    const currentAssetReturn =
+        document.getElementById('assetReturnRate').value;
+
+    writeSettings({
+        assetMode: mode,
+        depreciatingAssetRate:
+            assetMode === 'depreciating'
+                ? currentAssetReturn
+                : settings.depreciatingAssetRate,
+        flatAssetRate: 0,
+        appreciatingAssetRate:
+            assetMode === 'appreciating'
+                ? currentAssetReturn
+                : settings.appreciatingAssetRate
+    });
+
+    assetMode = mode;
+
+    const updated = readSettings();
+
+    document.getElementById('assetReturnRate').value =
+        mode === 'depreciating'
+            ? updated.depreciatingAssetRate
+            : mode === 'appreciating'
+                ? updated.appreciatingAssetRate
+                : 0;
+
+    updateAssetModeButtons();
+    calculate();
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
 function setReturnMode(mode) {
+    selectedLogId = null;
+
     const settings = readSettings();
     const currentReturn =
         document.getElementById('returnRate').value;
@@ -1135,13 +2355,27 @@ function setReturnMode(mode) {
     }
 }
 
+function currentAssetReturnForSave(settings) {
+    const raw = document.getElementById('assetReturnRate').value;
+
+    if (raw === '' || raw === '-') {
+        return null;
+    }
+
+    const parsed = parseFloat(raw);
+
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
 function saveSettings() {
     const settings = readSettings();
     const currentReturn =
         document.getElementById('returnRate').value;
+    const currentAssetReturn = currentAssetReturnForSave(settings);
 
     writeSettings({
         returnMode,
+        assetMode,
         displayMode,
         investReturnRate:
             returnMode === 'invest'
@@ -1151,6 +2385,15 @@ function saveSettings() {
             returnMode === 'save'
                 ? currentReturn
                 : settings.saveReturnRate,
+        depreciatingAssetRate:
+            assetMode === 'depreciating'
+                ? currentAssetReturn ?? settings.depreciatingAssetRate
+                : settings.depreciatingAssetRate,
+        flatAssetRate: 0,
+        appreciatingAssetRate:
+            assetMode === 'appreciating'
+                ? currentAssetReturn ?? settings.appreciatingAssetRate
+                : settings.appreciatingAssetRate,
         inflationRate:
             document.getElementById('inflationRate').value,
         currentAge:
@@ -1162,12 +2405,20 @@ function loadSettings() {
     const settings = readSettings();
 
     returnMode = settings.returnMode;
-    displayMode = settings.displayMode;
+    assetMode = settings.assetMode;
+    displayMode = normalizeDisplayMode(settings.displayMode);
 
     document.getElementById('returnRate').value =
         returnMode === 'invest'
             ? settings.investReturnRate
             : settings.saveReturnRate;
+
+    document.getElementById('assetReturnRate').value =
+        assetMode === 'depreciating'
+            ? settings.depreciatingAssetRate
+            : assetMode === 'appreciating'
+                ? settings.appreciatingAssetRate
+                : 0;
 
     document.getElementById('inflationRate').value =
         settings.inflationRate;
@@ -1176,6 +2427,7 @@ function loadSettings() {
         settings.currentAge;
 
     updateModeButtons();
+    updateAssetModeButtons();
     updateDisplayModeUI();
 }
 
@@ -1195,7 +2447,11 @@ function savePurchase() {
         document.getElementById('description').value.trim() ||
         'Unnamed Purchase';
 
-    const rate =
+    const assetRate =
+        (parseFloat(document.getElementById('assetReturnRate').value) || 0) /
+        100;
+
+    const altRate =
         (parseFloat(document.getElementById('returnRate').value) || 0) / 100;
 
     const inflation =
@@ -1205,13 +2461,22 @@ function savePurchase() {
         parseFloat(document.getElementById('currentAge').value) ||
         DEFAULT_CURRENT_AGE;
 
-    const retirementValue =
-        futureValue(
-            amount,
-            rate,
-            inflation,
-            RETIREMENT_AGE - age
-        );
+    const yearsToRetirement =
+        Math.max(0, RETIREMENT_AGE - age);
+
+    const assetRetirementValue = futureValue(
+        amount,
+        assetRate,
+        inflation,
+        yearsToRetirement
+    );
+
+    const retirementValue = futureValue(
+        amount,
+        altRate,
+        inflation,
+        yearsToRetirement
+    );
 
     const log = getLog();
 
@@ -1219,7 +2484,9 @@ function savePurchase() {
         id: crypto.randomUUID(),
         description,
         amount,
+        assetRetirementValue,
         retirementValue,
+        settings: captureSettingsSnapshot(),
         date: new Date().toISOString()
     });
 
@@ -1288,10 +2555,10 @@ function matchesLogSearch(item, query) {
 function resetAppData() {
     const confirmed = confirm(
         'This will permanently clear all saved data:\n\n' +
-        '• Annual return settings (Invest and Save)\n' +
+        '• Annual return settings (Invest, Save, and Asset types)\n' +
         '• Inflation rate\n' +
-        '• All avoided purchases\n' +
-        '• Current age\n\n' +
+        '• All saved projections\n' +
+        '• Your current age\n\n' +
         'Are you sure?'
     );
 
@@ -1303,12 +2570,15 @@ function resetAppData() {
     localStorage.removeItem('purchaseLog');
 
     returnMode = 'invest';
+    assetMode = 'flat';
     displayMode = 'opportunity';
+    selectedLogId = null;
     document.getElementById('amount').value = 100;
     document.getElementById('description').value = '';
     document.getElementById('logSearch').value = '';
 
     loadSettings();
+    applyTheme();
     calculate();
     renderLog();
 
@@ -1317,7 +2587,35 @@ function resetAppData() {
     }
 }
 
+function openPrivacyPolicy() {
+    const overlay = document.getElementById('privacyOverlay');
+
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    overlay.querySelector('.privacy-close')?.focus();
+}
+
+function closePrivacyPolicy() {
+    const overlay = document.getElementById('privacyOverlay');
+
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', event => {
+    if (
+        event.key === 'Escape' &&
+        !document.getElementById('privacyOverlay').hidden
+    ) {
+        closePrivacyPolicy();
+    }
+});
+
 function deletePurchase(id) {
+    if (selectedLogId === id) {
+        selectedLogId = null;
+    }
+
     const log = getLog().filter(item => itemId(item) !== id);
 
     localStorage.setItem(
@@ -1349,14 +2647,14 @@ function renderLog() {
     if (!allItems.length) {
         container.className = 'empty';
         container.textContent =
-            'No saved purchases.';
+            'No saved projections.';
         return;
     }
 
     if (!log.length) {
         container.className = 'empty';
         container.textContent =
-            'No matching purchases.';
+            'No matching projections.';
         return;
     }
 
@@ -1365,13 +2663,21 @@ function renderLog() {
     container.innerHTML =
         log.map(item => {
             const projection = formatProjectionValue(
-                item.amount,
+                item.assetRetirementValue ?? item.amount,
                 item.retirementValue
             );
 
+            const id = itemId(item);
+            const isSelected = selectedLogId === id;
+
             return `
-            <div class="log-item">
-                <div class="log-content">
+            <div class="log-item${isSelected ? ' selected' : ''}" data-log-id="${id}">
+                <div
+                    class="log-content"
+                    title="${UI_TOOLTIPS.logEntry}"
+                    role="button"
+                    tabindex="0"
+                >
                     <div class="log-description">
                         ${item.description}
                     </div>
@@ -1393,6 +2699,7 @@ function renderLog() {
                     class="delete-button"
                     type="button"
                     data-delete-id="${itemId(item)}"
+                    title="${UI_TOOLTIPS.deletePurchase}"
                     aria-label="Delete ${item.description}"
                 >
                     Delete
@@ -1410,8 +2717,27 @@ function renderLog() {
 ].forEach(id => {
     document
         .getElementById(id)
-        .addEventListener('input', calculate);
+        .addEventListener('input', () => {
+            selectedLogId = null;
+            calculate();
+        });
 });
+
+document
+    .getElementById('assetReturnRate')
+    .addEventListener('input', handleAssetReturnInput);
+
+document
+    .getElementById('assetDepreciating')
+    .addEventListener('click', () => setAssetMode('depreciating'));
+
+document
+    .getElementById('assetFlat')
+    .addEventListener('click', () => setAssetMode('flat'));
+
+document
+    .getElementById('assetAppreciating')
+    .addEventListener('click', () => setAssetMode('appreciating'));
 
 document
     .getElementById('modeInvest')
@@ -1422,12 +2748,20 @@ document
     .addEventListener('click', () => setReturnMode('save'));
 
 document
-    .getElementById('modeWorth')
-    .addEventListener('click', () => setDisplayMode('worth'));
+    .getElementById('modeWorthAlt')
+    .addEventListener('click', () => setDisplayMode('worth-alt'));
+
+document
+    .getElementById('modeWorthAsset')
+    .addEventListener('click', () => setDisplayMode('worth-asset'));
 
 document
     .getElementById('modeOpportunityCost')
     .addEventListener('click', () => setDisplayMode('opportunity'));
+
+document
+    .getElementById('themeToggle')
+    .addEventListener('click', toggleTheme);
 
 document
     .getElementById('logSearch')
@@ -1436,16 +2770,136 @@ document
 document
     .getElementById('purchaseLog')
     .addEventListener('click', event => {
-        const button = event.target.closest('[data-delete-id]');
+        const deleteButton = event.target.closest('[data-delete-id]');
 
-        if (button) {
-            deletePurchase(button.dataset.deleteId);
+        if (deleteButton) {
+            deletePurchase(deleteButton.dataset.deleteId);
+            return;
+        }
+
+        const logItem = event.target.closest('[data-log-id]');
+
+        if (logItem) {
+            loadLogEntry(logItem.dataset.logId);
+        }
+    });
+
+document
+    .getElementById('purchaseLog')
+    .addEventListener('keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+        }
+
+        const logContent = event.target.closest('.log-content');
+
+        if (!logContent) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const logItem = logContent.closest('[data-log-id]');
+
+        if (logItem) {
+            loadLogEntry(logItem.dataset.logId);
         }
     });
 
 window.addEventListener('resize', updateRetirementLayout);
 
+const NUMBER_INPUT_STEP_LABELS = {
+    amount: 'purchase price',
+    assetReturnRate: 'asset return',
+    returnRate: 'alternative return',
+    currentAge: 'current age',
+    inflationRate: 'inflation'
+};
+
+function stepNumberInput(input, direction) {
+    const parsedStep = parseFloat(input.step);
+    const step = Number.isFinite(parsedStep) && parsedStep > 0 ? parsedStep : 1;
+    const min =
+        input.min !== '' && input.min != null
+            ? parseFloat(input.min)
+            : -Infinity;
+    const max =
+        input.max !== '' && input.max != null
+            ? parseFloat(input.max)
+            : Infinity;
+    let current = parseFloat(input.value);
+
+    if (!Number.isFinite(current)) {
+        current = 0;
+    }
+
+    let next = current + direction * step;
+
+    if (step % 1 === 0) {
+        next = Math.round(next);
+    } else {
+        const decimals = (String(step).split('.')[1] || '').length;
+        next = parseFloat((Math.round(next / step) * step).toFixed(decimals));
+    }
+
+    if (Number.isFinite(min)) {
+        next = Math.max(min, next);
+    }
+
+    if (Number.isFinite(max)) {
+        next = Math.min(max, next);
+    }
+
+    input.value = String(next);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function setupNumberInputSteppers() {
+    document.querySelectorAll('input[type="number"]').forEach((input) => {
+        if (input.closest('.number-input-wrap')) {
+            return;
+        }
+
+        if (!input.hasAttribute('step') || input.getAttribute('step') === 'any') {
+            input.setAttribute('step', '1');
+        }
+
+        const wrap = document.createElement('div');
+        wrap.className = 'number-input-wrap';
+
+        const stepper = document.createElement('div');
+        stepper.className = 'number-stepper';
+
+        const label = NUMBER_INPUT_STEP_LABELS[input.id] || 'value';
+        const upBtn = document.createElement('button');
+        upBtn.type = 'button';
+        upBtn.className = 'number-step-up';
+        upBtn.setAttribute('aria-label', `Increase ${label}`);
+        upBtn.textContent = '▲';
+
+        const downBtn = document.createElement('button');
+        downBtn.type = 'button';
+        downBtn.className = 'number-step-down';
+        downBtn.setAttribute('aria-label', `Decrease ${label}`);
+        downBtn.textContent = '▼';
+
+        upBtn.addEventListener('click', () => stepNumberInput(input, 1));
+        downBtn.addEventListener('click', () => stepNumberInput(input, -1));
+
+        stepper.appendChild(upBtn);
+        stepper.appendChild(downBtn);
+
+        input.parentNode.insertBefore(wrap, input);
+        wrap.appendChild(input);
+        wrap.appendChild(stepper);
+    });
+}
+
+applyTooltips();
+setupNumberInputSteppers();
+setupChartHover();
 loadSettings();
+applyTheme();
 calculate();
 renderLog();
 
