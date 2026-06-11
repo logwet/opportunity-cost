@@ -1,4 +1,4 @@
-const CACHE = 'opportunity-cost-v6';
+const CACHE = 'opportunity-cost-v7';
 
 const PRECACHE = [
     './',
@@ -13,7 +13,12 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE).then(cache => cache.addAll(PRECACHE))
     );
-    self.skipWaiting();
+});
+
+self.addEventListener('message', event => {
+    if (event.data?.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
 self.addEventListener('activate', event => {

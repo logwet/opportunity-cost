@@ -1,0 +1,30 @@
+# Opportunity Cost Calculator
+
+> Free, private, installable web app (PWA) that compares what a purchase could be worth over time against investing or saving the money instead. All amounts in AUD. Runs entirely in the browser; no account, no server, no telemetry.
+
+## What it does
+
+Enter a purchase price and the app projects:
+
+- **Asset** — how the thing you buy might change in value (depreciating, no change, or appreciating).
+- **Alternative** — how the same money could grow if invested (~9% default) or saved (~3.2% default) instead.
+
+Both paths use a shared inflation assumption (default 3%). The headline result is **worth at retirement (age 65)**. Display modes: Worth of Asset, Opportunity Cost (default), or Worth of Alternative.
+
+## Key features
+
+- Live projections at 5, 10, 20, 30, and 50 years plus retirement (age 65)
+- Nominal and after-inflation columns; growth chart with milestone guides
+- Save scenarios to a local log; restore settings from saved entries
+- Installable PWA with offline support after first visit
+- Light/dark mode; desktop two-column layout
+- All data stored in browser localStorage on device only
+
+## URLs
+
+- App: https://logwet.github.io/opportunity-cost/
+- Source & full documentation: https://github.com/logwet/opportunity-cost
+
+## Optional
+
+- [README](https://github.com/logwet/opportunity-cost/blob/main/README.md): formulas, defaults, localStorage schema, and maintainer reference

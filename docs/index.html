@@ -9,11 +9,74 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Opportunity Cost">
 <meta name="theme-color" content="#f2f2f7">
+<meta
+    name="description"
+    content="Free opportunity cost calculator in AUD. Compare a purchase against investing or saving instead — projections to retirement, inflation-adjusted, private and offline."
+>
+<meta name="robots" content="index, follow">
+<meta name="author" content="logwet">
+<link rel="canonical" href="https://logwet.github.io/opportunity-cost/">
 <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
+<link rel="sitemap" type="application/xml" href="./sitemap.xml">
 
-<title>Opportunity Cost</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Opportunity Cost Calculator">
+<meta property="og:title" content="Opportunity Cost Calculator">
+<meta
+    property="og:description"
+    content="Should you buy it? Compare a purchase price to investing or saving the money instead — AUD projections to retirement, inflation-adjusted."
+>
+<meta property="og:url" content="https://logwet.github.io/opportunity-cost/">
+<meta property="og:locale" content="en_AU">
+<meta
+    property="og:image"
+    content="https://logwet.github.io/opportunity-cost/icons/icon-512.png"
+>
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Opportunity Cost Calculator">
+<meta
+    name="twitter:description"
+    content="Free AUD calculator: compare a purchase vs investing or saving. Projections to age 65, inflation-adjusted, private PWA."
+>
+<meta
+    name="twitter:image"
+    content="https://logwet.github.io/opportunity-cost/icons/icon-512.png"
+>
+
+<title>Opportunity Cost Calculator — Compare a Purchase vs Investing (AUD)</title>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Opportunity Cost Calculator",
+    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. AUD amounts, inflation-adjusted projections to retirement age 65.",
+    "url": "https://logwet.github.io/opportunity-cost/",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en-AU",
+    "isAccessibleForFree": true,
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "AUD"
+    },
+    "featureList": [
+        "Purchase vs invest or save comparison",
+        "Asset depreciation and appreciation",
+        "Inflation-adjusted projections",
+        "Retirement horizon at age 65",
+        "Offline installable PWA",
+        "Private on-device storage"
+    ]
+}
+</script>
 
 <style>
 :root,
@@ -804,9 +867,59 @@ input[type="text"] {
         padding: 20px 24px 24px;
     }
 }
+
+.update-banner {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 8px 32px var(--shadow);
+}
+
+.update-banner[hidden] {
+    display: none !important;
+}
+
+.update-banner-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--secondary);
+}
+
+.update-banner-action {
+    flex-shrink: 0;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+}
 </style>
 </head>
 <body>
+
+<noscript>
+    <p>
+        Opportunity Cost Calculator — compare a purchase price in AUD against
+        investing or saving the money instead. Projections to retirement (age 65),
+        with inflation adjustment. Enable JavaScript to use the calculator.
+    </p>
+</noscript>
 
 <div class="page-header">
     <h1>Opportunity Cost Calculator</h1>
@@ -1091,6 +1204,19 @@ input[type="text"] {
             </p>
         </div>
     </div>
+</div>
+
+<div
+    id="updateBanner"
+    class="update-banner"
+    role="status"
+    aria-live="polite"
+    hidden
+>
+    <p class="update-banner-text">A new version is available.</p>
+    <button id="updateBannerAction" class="update-banner-action" type="button">
+        Refresh
+    </button>
 </div>
 
 <script>
@@ -2895,21 +3021,104 @@ function setupNumberInputSteppers() {
     });
 }
 
+let pendingServiceWorkerRegistration = null;
+
+function showUpdateBanner(registration) {
+    if (!navigator.serviceWorker.controller) {
+        return;
+    }
+
+    pendingServiceWorkerRegistration = registration;
+    document.getElementById('updateBanner').hidden = false;
+}
+
+function applyServiceWorkerUpdate() {
+    const registration = pendingServiceWorkerRegistration;
+
+    if (!registration?.waiting) {
+        return;
+    }
+
+    let reloaded = false;
+
+    navigator.serviceWorker.addEventListener(
+        'controllerchange',
+        () => {
+            if (reloaded) {
+                return;
+            }
+
+            reloaded = true;
+            window.location.reload();
+        },
+        { once: true }
+    );
+
+    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+}
+
+function checkWaitingServiceWorker(registration) {
+    if (registration.waiting) {
+        showUpdateBanner(registration);
+    }
+}
+
+function setupServiceWorkerUpdates() {
+    if (!('serviceWorker' in navigator)) {
+        return;
+    }
+
+    document
+        .getElementById('updateBannerAction')
+        ?.addEventListener('click', applyServiceWorkerUpdate);
+
+    window.addEventListener('load', () => {
+        navigator.serviceWorker
+            .register('./sw.js')
+            .then(registration => {
+                checkWaitingServiceWorker(registration);
+
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+
+                    if (!newWorker) {
+                        return;
+                    }
+
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed') {
+                            checkWaitingServiceWorker(registration);
+                        }
+                    });
+                });
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState !== 'visible') {
+                        return;
+                    }
+
+                    registration
+                        .update()
+                        .then(() =>
+                            checkWaitingServiceWorker(registration)
+                        )
+                        .catch(() => {});
+                });
+
+                return registration.update();
+            })
+            .catch(() => {});
+    });
+}
+
 applyTooltips();
 setupNumberInputSteppers();
 setupChartHover();
+setupServiceWorkerUpdates();
 loadSettings();
 applyTheme();
 calculate();
 renderLog();
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker
-            .register('./sw.js')
-            .catch(() => {});
-    });
-}
 </script>
 
 </body>
