@@ -1,7 +1,7 @@
 {
-    "name": "Opportunity Cost",
+    "name": "Opportunity Cost Calculator",
     "short_name": "Opp Cost",
-    "description": "Compare a purchase to investing or saving instead. AUD projections to retirement, inflation-adjusted.",
+    "description": "Compare a purchase to investing or saving instead. Projections to retirement, inflation-adjusted.",
     "id": "./index.html",
     "start_url": "./index.html",
     "scope": "./",

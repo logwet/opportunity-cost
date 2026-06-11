@@ -1,6 +1,6 @@
 # Opportunity Cost Calculator
 
-> Free, private, installable web app (PWA) that compares what a purchase could be worth over time against investing or saving the money instead. All amounts in AUD. Runs entirely in the browser; no account, no server, no telemetry.
+> Free, private, installable web app (PWA) that compares what a purchase could be worth over time against investing or saving the money instead. Currency-agnostic (displays whole-dollar $ amounts). Runs entirely in the browser; no account, no server, no telemetry.
 
 ## What it does
 

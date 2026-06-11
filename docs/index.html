@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Opportunity Cost">
+<meta name="apple-mobile-web-app-title" content="Opportunity Cost Calculator">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="Opportunity Cost">
+<meta name="application-name" content="Opportunity Cost Calculator">
 <meta name="theme-color" content="#f2f2f7">
 <meta
     name="description"
-    content="Free opportunity cost calculator in AUD. Compare a purchase against investing or saving instead — projections to retirement, inflation-adjusted, private and offline."
+    content="Free opportunity cost calculator. Compare a purchase against investing or saving instead — projections to retirement, inflation-adjusted, private and offline."
 >
 <meta name="robots" content="index, follow">
 <meta name="author" content="logwet">
@@ -26,10 +26,9 @@
 <meta property="og:title" content="Opportunity Cost Calculator">
 <meta
     property="og:description"
-    content="Should you buy it? Compare a purchase price to investing or saving the money instead — AUD projections to retirement, inflation-adjusted."
+    content="Should you buy it? Compare a purchase price to investing or saving the money instead — projections to retirement, inflation-adjusted."
 >
 <meta property="og:url" content="https://logwet.github.io/opportunity-cost/">
-<meta property="og:locale" content="en_AU">
 <meta
     property="og:image"
     content="https://logwet.github.io/opportunity-cost/icons/icon-512.png"
@@ -41,31 +40,30 @@
 <meta name="twitter:title" content="Opportunity Cost Calculator">
 <meta
     name="twitter:description"
-    content="Free AUD calculator: compare a purchase vs investing or saving. Projections to age 65, inflation-adjusted, private PWA."
+    content="Free calculator: compare a purchase vs investing or saving. Projections to age 65, inflation-adjusted, private PWA."
 >
 <meta
     name="twitter:image"
     content="https://logwet.github.io/opportunity-cost/icons/icon-512.png"
 >
 
-<title>Opportunity Cost Calculator — Compare a Purchase vs Investing (AUD)</title>
+<title>Opportunity Cost Calculator</title>
 
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Opportunity Cost Calculator",
-    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. AUD amounts, inflation-adjusted projections to retirement age 65.",
+    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. Inflation-adjusted projections to retirement age 65.",
     "url": "https://logwet.github.io/opportunity-cost/",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Any",
     "browserRequirements": "Requires JavaScript",
-    "inLanguage": "en-AU",
+    "inLanguage": "en",
     "isAccessibleForFree": true,
     "offers": {
         "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "AUD"
+        "price": "0"
     },
     "featureList": [
         "Purchase vs invest or save comparison",
@@ -698,8 +696,21 @@ input[type="text"] {
     display: none;
 }
 
-.privacy-link-desktop {
+.app-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.app-footer-desktop {
     display: none;
+}
+
+.app-footer-mobile {
+    display: flex;
 }
 
 @media (min-width: 900px) {
@@ -711,19 +722,22 @@ input[type="text"] {
         display: none;
     }
 
-    .privacy-link-desktop {
-        display: block;
+    .app-footer-desktop {
+        display: flex;
     }
 
-    .privacy-link-mobile {
+    .app-footer-mobile {
         display: none;
     }
 }
 
+.app-version {
+    font-size: 14px;
+    color: var(--secondary);
+}
+
 .privacy-link {
-    display: block;
-    width: 100%;
-    margin-top: 12px;
+    margin: 0;
     padding: 8px 0;
     border: none;
     background: none;
@@ -731,9 +745,10 @@ input[type="text"] {
     font-size: 14px;
     font-family: inherit;
     cursor: pointer;
-    text-align: center;
+    text-align: right;
     text-decoration: underline;
     text-underline-offset: 2px;
+    flex-shrink: 0;
 }
 
 .privacy-overlay[hidden] {
@@ -915,7 +930,7 @@ input[type="text"] {
 
 <noscript>
     <p>
-        Opportunity Cost Calculator — compare a purchase price in AUD against
+        Opportunity Cost Calculator — compare a purchase price against
         investing or saving the money instead. Projections to retirement (age 65),
         with inflation adjustment. Enable JavaScript to use the calculator.
     </p>
@@ -1018,13 +1033,16 @@ input[type="text"] {
     Reset All Data
 </button>
 
-<button
-    class="privacy-link privacy-link-desktop"
-    type="button"
-    onclick="openPrivacyPolicy()"
->
-    Privacy Policy
-</button>
+<div class="app-footer app-footer-desktop">
+    <span class="app-version" data-app-version></span>
+    <button
+        class="privacy-link"
+        type="button"
+        onclick="openPrivacyPolicy()"
+    >
+        Privacy Policy
+    </button>
+</div>
 
 </div>
 <div class="app-column app-column-results">
@@ -1149,13 +1167,16 @@ input[type="text"] {
     Reset All Data
 </button>
 
-<button
-    class="privacy-link privacy-link-mobile"
-    type="button"
-    onclick="openPrivacyPolicy()"
->
-    Privacy Policy
-</button>
+<div class="app-footer app-footer-mobile">
+    <span class="app-version" data-app-version></span>
+    <button
+        class="privacy-link"
+        type="button"
+        onclick="openPrivacyPolicy()"
+    >
+        Privacy Policy
+    </button>
+</div>
 </div>
 
 <div id="privacyOverlay" class="privacy-overlay" hidden>
@@ -1220,6 +1241,7 @@ input[type="text"] {
 </div>
 
 <script>
+const APP_VERSION = '1.0';
 const RETIREMENT_AGE = 65;
 const DEFAULT_CURRENT_AGE = 25;
 const DEFAULT_INVEST_RETURN = 9;
@@ -1285,6 +1307,14 @@ const UI_TOOLTIPS = {
     themeToggle:
         'Switch between light and dark mode.'
 };
+
+function applyAppVersion() {
+    const label = `Version ${APP_VERSION}`;
+
+    document.querySelectorAll('[data-app-version]').forEach(element => {
+        element.textContent = label;
+    });
+}
 
 function applyTooltips() {
     const labelPairs = [
@@ -1465,14 +1495,12 @@ window
     });
 
 function currency(v) {
-    return new Intl.NumberFormat(
-        'en-AU',
-        {
-            style: 'currency',
-            currency: 'AUD',
+    return (
+        '$' +
+        new Intl.NumberFormat(undefined, {
             maximumFractionDigits: 0
-        }
-    ).format(v);
+        }).format(Math.round(v))
+    );
 }
 
 function futureValue(pv, rate, inflation, years) {
@@ -2631,7 +2659,7 @@ function itemId(item) {
 }
 
 function formatLogDate(isoDate) {
-    return new Intl.DateTimeFormat('en-AU', {
+    return new Intl.DateTimeFormat(undefined, {
         day: 'numeric',
         month: 'short',
         year: 'numeric'
@@ -2659,15 +2687,15 @@ function matchesLogSearch(item, query) {
     const searchable = [
         formatLogDate(item.date),
         formatLogDateNumeric(item.date),
-        new Intl.DateTimeFormat('en-AU', {
+        new Intl.DateTimeFormat(undefined, {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
         }).format(date),
-        new Intl.DateTimeFormat('en-AU', {
+        new Intl.DateTimeFormat(undefined, {
             month: 'short'
         }).format(date),
-        new Intl.DateTimeFormat('en-AU', {
+        new Intl.DateTimeFormat(undefined, {
             month: 'long'
         }).format(date),
         String(date.getFullYear()),
@@ -3111,6 +3139,7 @@ function setupServiceWorkerUpdates() {
     });
 }
 
+applyAppVersion();
 applyTooltips();
 setupNumberInputSteppers();
 setupChartHover();
