@@ -40,7 +40,7 @@
 <meta name="twitter:title" content="Opportunity Cost Calculator">
 <meta
     name="twitter:description"
-    content="Free calculator: compare a purchase vs investing or saving. Projections to age 65, inflation-adjusted, private PWA."
+    content="Free calculator: compare a purchase vs investing or saving. Projections to age 67, inflation-adjusted, private PWA."
 >
 <meta
     name="twitter:image"
@@ -54,7 +54,7 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Opportunity Cost Calculator",
-    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. Inflation-adjusted projections to retirement age 65.",
+    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. Inflation-adjusted projections to retirement age 67.",
     "url": "https://logwet.github.io/opportunity-cost/",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Any",
@@ -69,7 +69,7 @@
         "Purchase vs invest or save comparison",
         "Asset depreciation and appreciation",
         "Inflation-adjusted projections",
-        "Retirement horizon at age 65",
+        "Retirement horizon at age 67",
         "Offline installable PWA",
         "Private on-device storage"
     ]
@@ -630,6 +630,7 @@ input[type="text"] {
 }
 
 .chart-container {
+    position: relative;
     margin-top: 16px;
     padding-top: 16px;
     border-top: 1px solid rgba(128,128,128,0.15);
@@ -924,6 +925,119 @@ input[type="text"] {
     cursor: pointer;
     touch-action: manipulation;
 }
+
+.help-trigger {
+    display: none;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(128, 128, 128, 0.18);
+    color: var(--secondary);
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.help-trigger.active {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .help-trigger {
+        display: inline-flex;
+    }
+}
+
+.label-with-help {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.label-with-help .help-trigger {
+    margin-left: auto;
+}
+
+.inline-with-help {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.control-with-help {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.control-with-help > .segmented-control,
+.control-with-help > .quick-buttons {
+    flex: 1;
+    min-width: 0;
+}
+
+.reset-with-help .reset-button {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+}
+
+.chart-container .help-trigger {
+    position: absolute;
+    top: 18px;
+    right: 0;
+    z-index: 2;
+}
+
+.page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.help-popover {
+    position: fixed;
+    z-index: 950;
+    max-width: min(300px, calc(100vw - 32px));
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 8px 28px var(--shadow);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.help-popover[hidden] {
+    display: none !important;
+}
+
+.help-popover p {
+    margin: 0;
+    white-space: pre-line;
+}
+
+.row-with-help {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.row-with-help .row {
+    flex: 1;
+    min-width: 0;
+}
 </style>
 </head>
 <body>
@@ -931,7 +1045,7 @@ input[type="text"] {
 <noscript>
     <p>
         Opportunity Cost Calculator — compare a purchase price against
-        investing or saving the money instead. Projections to retirement (age 65),
+        investing or saving the money instead. Projections to retirement (age 67),
         with inflation adjustment. Enable JavaScript to use the calculator.
     </p>
 </noscript>
@@ -959,7 +1073,15 @@ input[type="text"] {
 
 <div class="card">
     <label>Purchase Price ($)</label>
-    <input id="amount" type="number" value="100" min="0" step="1">
+    <input
+        id="amount"
+        type="number"
+        value="100"
+        min="0"
+        step="0.01"
+        inputmode="decimal"
+        data-stepper-step="1"
+    >
 
     <div class="quick-buttons">
         <button onclick="addAmount(5)">+$5</button>
@@ -967,6 +1089,7 @@ input[type="text"] {
         <button onclick="addAmount(20)">+$20</button>
         <button onclick="addAmount(50)">+$50</button>
         <button onclick="addAmount(100)">+$100</button>
+        <button onclick="addAmount(1000)">+$1000</button>
     </div>
 </div>
 
@@ -988,7 +1111,15 @@ input[type="text"] {
     </div>
 
     <label>Asset Return (%)</label>
-    <input id="assetReturnRate" class="small-input" type="number" value="0" step="1">
+    <input
+        id="assetReturnRate"
+        class="small-input"
+        type="number"
+        value="0"
+        step="0.01"
+        inputmode="decimal"
+        data-stepper-step="1"
+    >
 </div>
 
 <div class="card">
@@ -1006,7 +1137,15 @@ input[type="text"] {
     </div>
 
     <label>Alternative Return (%)</label>
-    <input id="returnRate" class="small-input" type="number" value="9" step="1">
+    <input
+        id="returnRate"
+        class="small-input"
+        type="number"
+        value="9"
+        step="0.01"
+        inputmode="decimal"
+        data-stepper-step="1"
+    >
 </div>
 
 <div class="card">
@@ -1014,12 +1153,20 @@ input[type="text"] {
     <div class="settings-grid">
         <div>
             <label>Your Current Age</label>
-            <input id="currentAge" class="small-input" type="number" value="25" step="1" min="0">
+            <input id="currentAge" class="small-input" type="number" value="25" step="1" min="0" inputmode="numeric">
         </div>
 
         <div>
             <label>Inflation (%)</label>
-            <input id="inflationRate" class="small-input" type="number" value="3" step="1">
+            <input
+                id="inflationRate"
+                class="small-input"
+                type="number"
+                value="3"
+                step="0.01"
+                inputmode="decimal"
+                data-stepper-step="1"
+            >
         </div>
     </div>
 </div>
@@ -1062,7 +1209,7 @@ input[type="text"] {
     </div>
 
     <div class="big-number">
-        <div id="retirementTitle" class="label">Opportunity Cost At Retirement (Age 65)</div>
+        <div id="retirementTitle" class="label"></div>
         <div id="retirementValues" class="big-number-values">
             <div class="big-number-nominal">
                 <div id="retirementNominalValue" class="value-nominal">$0</div>
@@ -1228,6 +1375,15 @@ input[type="text"] {
 </div>
 
 <div
+    id="helpPopover"
+    class="help-popover"
+    role="tooltip"
+    hidden
+>
+    <p id="helpPopoverText"></p>
+</div>
+
+<div
     id="updateBanner"
     class="update-banner"
     role="status"
@@ -1241,8 +1397,8 @@ input[type="text"] {
 </div>
 
 <script>
-const APP_VERSION = '1.0';
-const RETIREMENT_AGE = 65;
+const APP_VERSION = '1.1';
+const RETIREMENT_AGE = 67;
 const DEFAULT_CURRENT_AGE = 25;
 const DEFAULT_INVEST_RETURN = 9;
 const DEFAULT_SAVE_RETURN = 3.2;
@@ -1271,7 +1427,7 @@ const UI_TOOLTIPS = {
     assetReturnRate:
         'Expected annual change in the asset’s value. Negative for depreciation (e.g. a car). After-inflation columns adjust this using the shared inflation rate.',
     currentAge:
-        'Your age today. Used with retirement age 65 to calculate years until retirement.',
+        'Your age today. Used with the retirement age to calculate years until retirement.',
     modeInvest:
         'Compare against investing in growth assets. Default alternative return is 9%.',
     modeSave:
@@ -1291,7 +1447,7 @@ const UI_TOOLTIPS = {
     resultHeaderInflation:
         'Values adjusted for inflation so you can compare in today’s purchasing power.',
     growthChart:
-        'Projected value over time using after-inflation returns. Hover or drag along the chart to inspect a year and value.',
+        'Projected value over time using after-inflation returns. Touch or drag along the chart to inspect a year and value.',
     description:
         'Optional label for this projection in your saved projections log.',
     savePurchase:
@@ -1410,6 +1566,241 @@ function applyTooltips() {
         retirementInflationLabel.title = UI_TOOLTIPS.resultHeaderInflation;
     }
 }
+
+let activeHelpTrigger = null;
+
+function isTouchPrimaryDevice() {
+    return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+}
+
+function combinedHelpText(keys) {
+    return keys
+        .map(key => UI_TOOLTIPS[key])
+        .filter(Boolean)
+        .join('\n\n');
+}
+
+function createHelpTrigger(text) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'help-trigger';
+    button.setAttribute('aria-label', 'Help');
+    button.textContent = '?';
+    button.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleHelpPopover(button, text);
+    });
+    return button;
+}
+
+function positionHelpPopover(trigger, popover) {
+    const margin = 8;
+    const rect = trigger.getBoundingClientRect();
+    const popoverRect = popover.getBoundingClientRect();
+    let top = rect.bottom + margin;
+    let left = rect.left + rect.width / 2 - popoverRect.width / 2;
+
+    left = Math.max(
+        margin,
+        Math.min(left, window.innerWidth - popoverRect.width - margin)
+    );
+
+    if (top + popoverRect.height > window.innerHeight - margin) {
+        top = rect.top - popoverRect.height - margin;
+    }
+
+    popover.style.top = `${Math.max(margin, top)}px`;
+    popover.style.left = `${left}px`;
+}
+
+function closeHelpPopover() {
+    const popover = document.getElementById('helpPopover');
+
+    popover.hidden = true;
+
+    if (activeHelpTrigger) {
+        activeHelpTrigger.classList.remove('active');
+        activeHelpTrigger = null;
+    }
+}
+
+function toggleHelpPopover(trigger, text) {
+    const popover = document.getElementById('helpPopover');
+    const textEl = document.getElementById('helpPopoverText');
+
+    if (activeHelpTrigger === trigger) {
+        closeHelpPopover();
+        return;
+    }
+
+    closeHelpPopover();
+    activeHelpTrigger = trigger;
+    trigger.classList.add('active');
+    textEl.textContent = text;
+    popover.hidden = false;
+    positionHelpPopover(trigger, popover);
+}
+
+function labelForInput(inputId) {
+    const input = document.getElementById(inputId);
+
+    return input?.closest('div')?.querySelector('label') ?? null;
+}
+
+function wrapControlWithHelp(control, text) {
+    if (!control || control.parentElement?.classList.contains('control-with-help')) {
+        return;
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'control-with-help';
+
+    control.parentNode.insertBefore(wrap, control);
+    wrap.appendChild(control);
+    wrap.appendChild(createHelpTrigger(text));
+}
+
+function addHelpToLabel(label, text) {
+    if (!label || label.querySelector('.help-trigger')) {
+        return;
+    }
+
+    label.classList.add('label-with-help');
+    label.appendChild(createHelpTrigger(text));
+}
+
+function addHelpInline(anchor, text) {
+    if (!anchor || anchor.querySelector('.help-trigger')) {
+        return;
+    }
+
+    anchor.classList.add('inline-with-help');
+    anchor.appendChild(createHelpTrigger(text));
+}
+
+function setupMobileHelp() {
+    if (!isTouchPrimaryDevice()) {
+        return;
+    }
+
+    [
+        ['amount', () => labelForInput('amount')],
+        ['assetReturnRate', () => labelForInput('assetReturnRate')],
+        ['returnRate', () => labelForInput('returnRate')],
+        ['currentAge', () => labelForInput('currentAge')],
+        ['inflationRate', () => labelForInput('inflationRate')],
+        ['description', () => labelForInput('description')],
+        ['logSearch', () => labelForInput('logSearch')]
+    ].forEach(([key, getLabel]) => {
+        addHelpToLabel(getLabel(), UI_TOOLTIPS[key]);
+    });
+
+    wrapControlWithHelp(
+        document.querySelector('.quick-buttons'),
+        UI_TOOLTIPS.quickAdd
+    );
+
+    wrapControlWithHelp(
+        document.querySelector('.asset-type-control'),
+        combinedHelpText([
+            'assetDepreciating',
+            'assetFlat',
+            'assetAppreciating'
+        ])
+    );
+
+    wrapControlWithHelp(
+        document.querySelector('.alternative-type-control'),
+        combinedHelpText(['modeInvest', 'modeSave'])
+    );
+
+    wrapControlWithHelp(
+        document.querySelector('.display-mode-control'),
+        combinedHelpText([
+            'modeWorthAsset',
+            'modeOpportunityCost',
+            'modeWorthAlt'
+        ])
+    );
+
+    const nominalHeader = document.querySelector('.result-header-nominal');
+    const inflationHeader = document.querySelector('.result-header-inflation');
+
+    addHelpInline(nominalHeader, UI_TOOLTIPS.resultHeaderNominal);
+    addHelpInline(inflationHeader, UI_TOOLTIPS.resultHeaderInflation);
+
+    const retirementNominalLabel = document.querySelector(
+        '.big-number-nominal .label'
+    );
+    const retirementInflationLabel =
+        document.getElementById('afterInflationNote');
+
+    addHelpInline(retirementNominalLabel, UI_TOOLTIPS.resultHeaderNominal);
+    addHelpInline(retirementInflationLabel, UI_TOOLTIPS.resultHeaderInflation);
+
+    const chartContainer = document.querySelector('.chart-container');
+
+    if (chartContainer && !chartContainer.querySelector('.help-trigger')) {
+        chartContainer.appendChild(
+            createHelpTrigger(UI_TOOLTIPS.growthChart)
+        );
+    }
+
+    const themeToggle = document.getElementById('themeToggle');
+
+    if (themeToggle && !themeToggle.parentElement?.classList.contains(
+        'page-header-actions'
+    )) {
+        const actions = document.createElement('div');
+        actions.className = 'page-header-actions';
+
+        themeToggle.parentNode.insertBefore(actions, themeToggle);
+        actions.appendChild(createHelpTrigger(UI_TOOLTIPS.themeToggle));
+        actions.appendChild(themeToggle);
+    }
+
+    const saveRow = document.querySelector('#description')?.closest('.row');
+
+    if (saveRow && !saveRow.parentElement?.classList.contains('row-with-help')) {
+        const wrap = document.createElement('div');
+        wrap.className = 'row-with-help';
+
+        saveRow.parentNode.insertBefore(wrap, saveRow);
+        wrap.appendChild(saveRow);
+        wrap.appendChild(createHelpTrigger(UI_TOOLTIPS.savePurchase));
+    }
+
+    document.querySelectorAll('.reset-button').forEach(button => {
+        if (button.parentElement?.classList.contains('reset-with-help')) {
+            return;
+        }
+
+        const wrap = document.createElement('div');
+        wrap.className = 'reset-with-help control-with-help';
+
+        button.parentNode.insertBefore(wrap, button);
+        wrap.appendChild(button);
+        wrap.appendChild(createHelpTrigger(UI_TOOLTIPS.resetButton));
+    });
+}
+
+document.addEventListener('click', event => {
+    if (
+        event.target.closest('.help-trigger') ||
+        event.target.closest('#helpPopover')
+    ) {
+        return;
+    }
+
+    closeHelpPopover();
+});
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+        closeHelpPopover();
+    }
+});
 
 function getColorThemePreference() {
     const settings = readSettings();
@@ -2193,9 +2584,9 @@ function normalizeDisplayMode(mode) {
 
 function updateDisplayModeUI() {
     const titles = {
-        opportunity: 'Opportunity Cost At Retirement (Age 65)',
-        'worth-alt': 'Worth of Alternative At Retirement (Age 65)',
-        'worth-asset': 'Worth of Asset At Retirement (Age 65)'
+        opportunity: `Opportunity Cost At Retirement (Age ${RETIREMENT_AGE})`,
+        'worth-alt': `Worth of Alternative At Retirement (Age ${RETIREMENT_AGE})`,
+        'worth-asset': `Worth of Asset At Retirement (Age ${RETIREMENT_AGE})`
     };
 
     document.getElementById('retirementTitle').textContent =
@@ -2971,7 +3362,10 @@ const NUMBER_INPUT_STEP_LABELS = {
 };
 
 function stepNumberInput(input, direction) {
-    const parsedStep = parseFloat(input.step);
+    const stepperStep = input.dataset.stepperStep;
+    const parsedStep = stepperStep
+        ? parseFloat(stepperStep)
+        : parseFloat(input.step);
     const step = Number.isFinite(parsedStep) && parsedStep > 0 ? parsedStep : 1;
     const min =
         input.min !== '' && input.min != null
@@ -3141,6 +3535,7 @@ function setupServiceWorkerUpdates() {
 
 applyAppVersion();
 applyTooltips();
+setupMobileHelp();
 setupNumberInputSteppers();
 setupChartHover();
 setupServiceWorkerUpdates();
