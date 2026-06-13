@@ -2129,6 +2129,95 @@ let chartHoverState = null;
 let chartHoverBound = false;
 let chartValueMode = 'real';
 
+const RENDER_LOG_DELAY_MS = 150;
+const SAVE_SETTINGS_DELAY_MS = 400;
+
+let renderLogTimer = null;
+let calculateRaf = null;
+let saveSettingsTimer = null;
+let cachedPurchaseLog = null;
+let lastUiDisplayMode = null;
+let lastUiRetirementAge = null;
+let lastUiInflationRate = null;
+let lastUiChartNominal = null;
+let lastUiDisplayModeForChart = null;
+
+function scheduleRenderLog() {
+    if (renderLogTimer !== null) {
+        clearTimeout(renderLogTimer);
+    }
+
+    renderLogTimer = setTimeout(() => {
+        renderLogTimer = null;
+        renderLog();
+    }, RENDER_LOG_DELAY_MS);
+}
+
+function scheduleCalculate() {
+    if (calculateRaf !== null) {
+        return;
+    }
+
+    calculateRaf = requestAnimationFrame(() => {
+        calculateRaf = null;
+        calculate();
+    });
+}
+
+function scheduleSaveSettings() {
+    if (saveSettingsTimer !== null) {
+        clearTimeout(saveSettingsTimer);
+    }
+
+    saveSettingsTimer = setTimeout(() => {
+        saveSettingsTimer = null;
+        saveSettings();
+    }, SAVE_SETTINGS_DELAY_MS);
+}
+
+function flushSaveSettings() {
+    if (saveSettingsTimer !== null) {
+        clearTimeout(saveSettingsTimer);
+        saveSettingsTimer = null;
+    }
+
+    saveSettings();
+}
+
+function invalidatePurchaseLogCache() {
+    cachedPurchaseLog = null;
+}
+
+function setPurchaseLog(log) {
+    cachedPurchaseLog = log;
+    localStorage.setItem('purchaseLog', JSON.stringify(log));
+}
+
+function maybeUpdateDisplayModeUI(retirementAge) {
+    if (
+        displayMode === lastUiDisplayMode &&
+        retirementAge === lastUiRetirementAge
+    ) {
+        return;
+    }
+
+    updateDisplayModeUI();
+}
+
+function maybeUpdateInflationUI(inflationRate) {
+    const nominal = chartUsesNominalValues();
+
+    if (
+        inflationRate === lastUiInflationRate &&
+        nominal === lastUiChartNominal &&
+        displayMode === lastUiDisplayModeForChart
+    ) {
+        return;
+    }
+
+    updateInflationUI(inflationRate);
+}
+
 const UI_TOOLTIPS = {
     amount:
         'The dollar amount you are considering spending on this asset or purchase.',
@@ -2656,6 +2745,12 @@ function chartUsesNominalValues() {
     return chartValueMode === 'nominal';
 }
 
+function syncProjectionClass(element, className, active) {
+    if (element.classList.contains(className) !== active) {
+        element.classList.toggle(className, active);
+    }
+}
+
 function applyProjectionValue(
     element,
     assetFuture,
@@ -2665,26 +2760,31 @@ function applyProjectionValue(
     const display = formatProjectionValue(assetFuture, altFuture);
     const emphasizeNominal = chartUsesNominalValues();
     const isPrimary = isNominalColumn === emphasizeNominal;
-
-    element.textContent = display.text;
-    element.classList.toggle('value-emphasized', isPrimary);
-    element.classList.toggle('value-deemphasized', !isPrimary);
-
     const delta = display.opportunityDelta ?? 0;
 
-    element.classList.toggle(
+    if (element.textContent !== display.text) {
+        element.textContent = display.text;
+    }
+
+    syncProjectionClass(element, 'value-emphasized', isPrimary);
+    syncProjectionClass(element, 'value-deemphasized', !isPrimary);
+    syncProjectionClass(
+        element,
         'opportunity-cost',
         display.isOpportunityCost && isPrimary && delta > 0
     );
-    element.classList.toggle(
+    syncProjectionClass(
+        element,
         'opportunity-advantage',
         display.isOpportunityCost && isPrimary && delta < 0
     );
-    element.classList.toggle(
+    syncProjectionClass(
+        element,
         'opportunity-cost-nominal',
         display.isOpportunityCost && !isPrimary && delta > 0
     );
-    element.classList.toggle(
+    syncProjectionClass(
+        element,
         'opportunity-advantage-nominal',
         display.isOpportunityCost && !isPrimary && delta < 0
     );
@@ -2987,7 +3087,7 @@ function drawChart(
                 altRate,
                 inflation,
                 year,
-                chartUsesNominalValues()
+                useNominal
             )
         );
     }
@@ -3017,15 +3117,7 @@ function drawChart(
     let linePath = '';
 
     for (let year = 0; year <= maxYears; year++) {
-        const value = projectionValue(
-            amount,
-            assetRate,
-            altRate,
-            inflation,
-            year,
-            chartUsesNominalValues()
-        );
-        linePath += `${year === 0 ? 'M' : 'L'} ${x(year)} ${y(value)} `;
+        linePath += `${year === 0 ? 'M' : 'L'} ${x(year)} ${y(values[year])} `;
     }
 
     const baselineY = y(minValue);
@@ -3238,7 +3330,9 @@ function calculate() {
         altRetirementFuture
     );
 
-    updateDisplayModeUI();
+    const retirementAge = getRetirementAge();
+
+    maybeUpdateDisplayModeUI(retirementAge);
     updateDisplayModeExplanation(
         assetRetirementFuture,
         altRetirementFuture
@@ -3247,7 +3341,7 @@ function calculate() {
     const inflationRate =
         parseFloat(document.getElementById('inflationRate').value) || 0;
 
-    updateInflationUI(inflationRate);
+    maybeUpdateInflationUI(inflationRate);
     updateRetirementLayout();
 
     drawChart(
@@ -3258,7 +3352,7 @@ function calculate() {
         yearsToRetirement
     );
 
-    saveSettings();
+    scheduleSaveSettings();
 }
 
 function getChartTitle(inflationRate) {
@@ -3382,6 +3476,10 @@ function updateInflationUI(inflationRate) {
         .classList.toggle('no-inflation', noInflation);
 
     updateValueDisplayModeUI(inflationRate);
+
+    lastUiInflationRate = inflationRate;
+    lastUiChartNominal = chartUsesNominalValues();
+    lastUiDisplayModeForChart = displayMode;
 }
 
 function updateRetirementLayout() {
@@ -3596,7 +3694,7 @@ function syncAgeInputs() {
 
 function handleAgeInput() {
     selectedLogId = null;
-    calculate();
+    scheduleCalculate();
 }
 
 function handleAgeBlur(inputId) {
@@ -3612,6 +3710,7 @@ function handleAgeBlur(inputId) {
 
     syncAgeInputs();
     calculate();
+    flushSaveSettings();
 }
 
 function updateDisplayModeExplanation(assetFuture, altFuture) {
@@ -3670,6 +3769,9 @@ function updateDisplayModeUI() {
     document
         .getElementById('modeWorthAsset')
         .classList.toggle('active', displayMode === 'worth-asset');
+
+    lastUiDisplayMode = displayMode;
+    lastUiRetirementAge = retirementAge;
 }
 
 function setDisplayMode(mode) {
@@ -3877,14 +3979,14 @@ function handleAssetReturnInput() {
     const raw = input.value;
 
     if (raw === '' || raw === '-') {
-        calculate();
+        scheduleCalculate();
         return;
     }
 
     const rate = parseFloat(raw);
 
     if (Number.isNaN(rate)) {
-        calculate();
+        scheduleCalculate();
         return;
     }
 
@@ -3895,7 +3997,7 @@ function handleAssetReturnInput() {
         }
 
         input.value = 0;
-        calculate();
+        scheduleCalculate();
         return;
     }
 
@@ -3905,7 +4007,7 @@ function handleAssetReturnInput() {
             return;
         }
 
-        calculate();
+        scheduleCalculate();
         return;
     }
 
@@ -3914,7 +4016,7 @@ function handleAssetReturnInput() {
         return;
     }
 
-    calculate();
+    scheduleCalculate();
 }
 
 function setAssetMode(mode) {
@@ -4090,9 +4192,15 @@ function loadSettings() {
 }
 
 function getLog() {
-    return JSON.parse(
+    if (cachedPurchaseLog !== null) {
+        return cachedPurchaseLog;
+    }
+
+    cachedPurchaseLog = JSON.parse(
         localStorage.getItem('purchaseLog') || '[]'
     );
+
+    return cachedPurchaseLog;
 }
 
 function savePurchase() {
@@ -4146,10 +4254,7 @@ function savePurchase() {
         date: new Date().toISOString()
     });
 
-    localStorage.setItem(
-        'purchaseLog',
-        JSON.stringify(log)
-    );
+    setPurchaseLog(log);
 
     document.getElementById('description').value = '';
 
@@ -4224,6 +4329,7 @@ function resetAppData() {
 
     localStorage.removeItem('opportunityCostSettings');
     localStorage.removeItem('purchaseLog');
+    invalidatePurchaseLogCache();
 
     returnMode = 'invest';
     assetMode = 'flat';
@@ -4274,10 +4380,7 @@ function deletePurchase(id) {
 
     const log = getLog().filter(item => itemId(item) !== id);
 
-    localStorage.setItem(
-        'purchaseLog',
-        JSON.stringify(log)
-    );
+    setPurchaseLog(log);
 
     renderLog();
 
@@ -4372,12 +4475,13 @@ function renderLog() {
     'returnRate',
     'inflationRate'
 ].forEach(id => {
-    document
-        .getElementById(id)
-        .addEventListener('input', () => {
-            selectedLogId = null;
-            calculate();
-        });
+    const input = document.getElementById(id);
+
+    input.addEventListener('input', () => {
+        selectedLogId = null;
+        scheduleCalculate();
+    });
+    input.addEventListener('blur', flushSaveSettings);
 });
 
 document
@@ -4399,6 +4503,10 @@ document
 document
     .getElementById('assetReturnRate')
     .addEventListener('input', handleAssetReturnInput);
+
+document
+    .getElementById('assetReturnRate')
+    .addEventListener('blur', flushSaveSettings);
 
 document
     .getElementById('assetDepreciating')
@@ -4446,7 +4554,7 @@ document
 
 document
     .getElementById('logSearch')
-    .addEventListener('input', renderLog);
+    .addEventListener('input', scheduleRenderLog);
 
 document
     .getElementById('purchaseLog')
@@ -5324,6 +5432,14 @@ function setupServiceWorkerUpdates() {
             .catch(() => {});
     });
 }
+
+window.addEventListener('pagehide', flushSaveSettings);
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+        flushSaveSettings();
+    }
+});
 
 applyAppVersion();
 applyTooltips();
