@@ -27,4 +27,4 @@ Both paths use a shared inflation assumption (default 3%). The headline result i
 
 ## Optional
 
-- [README](https://github.com/logwet/opportunity-cost/blob/main/README.md): formulas, defaults, localStorage schema, and maintainer reference
+- [README](https://github.com/logwet/opportunity-cost/blob/main/README.md): what the app is and how to use it

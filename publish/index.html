@@ -118,9 +118,13 @@ body {
     background: var(--bg);
     color: var(--text);
     font-family:
+        system-ui,
         -apple-system,
         BlinkMacSystemFont,
-        "SF Pro Display",
+        "Segoe UI",
+        Roboto,
+        "Helvetica Neue",
+        Arial,
         sans-serif;
 }
 
@@ -1597,7 +1601,11 @@ input[type="text"] {
 </div>
 
 <script>
-const APP_VERSION = '1.22';
+const APP_VERSION = '__INJECT_APP_VERSION__';
+
+function getAppVersion() {
+    return APP_VERSION.startsWith('__INJECT_') ? 'dev' : APP_VERSION;
+}
 const DEFAULT_PURCHASE_AMOUNT = 100;
 const DEFAULT_RETIREMENT_AGE = 67;
 const DEFAULT_CURRENT_AGE = 25;
@@ -1677,7 +1685,7 @@ const UI_TOOLTIPS = {
 };
 
 function applyAppVersion() {
-    const label = `Version ${APP_VERSION}`;
+    const label = `Version ${getAppVersion()}`;
 
     document.querySelectorAll('[data-app-version]').forEach(element => {
         element.textContent = label;

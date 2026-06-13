@@ -7,6 +7,10 @@
 # macOS thumbnails
 Thumbs.db
 
+# Node
+node_modules/
+dist/
+
 # Python
 .venv/
 

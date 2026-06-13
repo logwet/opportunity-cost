@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Render PNG PWA icons from icons/icon.svg using resvg-js."""
+"""Render PNG PWA icons from publish/icons/icon.svg using resvg-js."""
 
 import subprocess
 import sys
 from pathlib import Path
 
-ICON_DIR = Path(__file__).parent
+REPO_ROOT = Path(__file__).resolve().parent
+ICON_DIR = REPO_ROOT / 'publish' / 'icons'
 SVG = ICON_DIR / 'icon.svg'
 
 

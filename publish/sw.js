@@ -1,5 +1,5 @@
-const APP_VERSION = '1.22';
-const CACHE = `opportunity-cost-${APP_VERSION}`;
+const APP_VERSION = '__INJECT_APP_VERSION__';
+const CACHE = `opportunity-cost-${APP_VERSION.startsWith('__INJECT_') ? 'dev' : APP_VERSION}`;
 
 const PRECACHE = [
     './',
