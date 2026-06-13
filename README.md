@@ -51,6 +51,10 @@ All settings and saved projections stay **on your device only**. The app does no
 
 This project is open source on [GitHub](https://github.com/logwet/opportunity-cost).
 
+## License
+
+This project is licensed under the [GNU Lesser General Public License v3.0](LICENSE).
+
 ## Attribution
 
 Built with [Cursor](https://cursor.com).
