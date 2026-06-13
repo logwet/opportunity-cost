@@ -1,4 +1,4 @@
-const APP_VERSION = '1.21';
+const APP_VERSION = '1.22';
 const CACHE = `opportunity-cost-${APP_VERSION}`;
 
 const PRECACHE = [
