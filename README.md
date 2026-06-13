@@ -12,13 +12,9 @@ Everything runs in your browser. There is no account, no sign-up, and nothing yo
   <img src="assets/readme/iphone-17-pro-dark.png" alt="Opportunity Cost Calculator on iPhone 17 Pro — results and chart in dark mode" width="280">
 </p>
 
-<p align="center"><em>iPhone 17 Pro — inputs (light) and projections with chart (dark)</em></p>
-
-<p align="center">
-  <img src="assets/readme/macbook-air.png" alt="Opportunity Cost Calculator in a browser window — desktop layout with chart in dark mode" width="520">
+<p>
+  <img src="assets/readme/macbook-air.png" alt="Opportunity Cost Calculator in a browser window — desktop layout with chart in dark mode" width="100%">
 </p>
-
-<p align="center"><em>Desktop browser — dark mode</em></p>
 
 ## What is opportunity cost?
 
