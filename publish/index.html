@@ -288,6 +288,7 @@ input[type="number"] {
     border: none;
     border-radius: 14px;
     padding: 16px;
+    font-family: inherit;
     font-size: 28px;
     background: var(--bg);
     color: var(--text);
@@ -295,21 +296,35 @@ input[type="number"] {
 
 input[type="number"]:focus,
 input[type="search"]:focus,
-input[type="text"]:focus {
+input[type="text"]:focus,
+.text-field:focus {
     outline: 2px solid var(--accent);
 }
 
+.text-field,
 input[type="search"],
 input[type="text"] {
     width: 100%;
+    margin: 0;
     border: none;
     border-radius: 14px;
     padding: 12px 16px;
+    font-family: inherit;
     font-size: 16px;
+    font-weight: inherit;
+    line-height: 1.25;
     background: var(--bg);
     color: var(--text);
+    box-shadow: none;
     -webkit-appearance: none;
     appearance: none;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
 }
 
 .search-input {
@@ -324,6 +339,11 @@ input[type="text"] {
 
 .small-input {
     font-size: 18px !important;
+}
+
+input[type="text"].small-input,
+input[type="search"].small-input {
+    padding: 16px;
 }
 
 .number-input-wrap {
@@ -752,6 +772,8 @@ input[type="text"] {
 
 .row input {
     flex: 1;
+    min-width: 0;
+    font-family: inherit;
 }
 
 .empty {
@@ -822,6 +844,70 @@ input[type="text"] {
     cursor: pointer;
 }
 
+.install-tile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 16px 18px;
+    border: none;
+    border-radius: 20px;
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 4px 12px var(--shadow);
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.install-tile[hidden] {
+    display: none !important;
+}
+
+.install-tile-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(0, 122, 255, 0.12);
+    color: var(--accent);
+}
+
+.install-tile-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.install-tile-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.install-tile-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.install-tile-desc {
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--secondary);
+}
+
+@media (min-width: 900px) {
+    .install-tile {
+        display: none !important;
+    }
+}
+
 .reset-button-desktop {
     display: none;
 }
@@ -854,11 +940,60 @@ input[type="text"] {
 
     .app-footer-desktop {
         display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .app-footer-desktop .app-footer-top {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        width: 100%;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .app-footer-desktop .app-footer-top .app-version {
+        justify-self: start;
+    }
+
+    .app-footer-desktop .app-footer-top .footer-link {
+        justify-self: center;
+        grid-column: 2;
+    }
+
+    .app-footer-desktop .app-footer-top .privacy-link {
+        justify-self: end;
+        grid-column: 3;
+    }
+
+    .app-footer-desktop .app-footer-bottom {
+        display: flex;
+        justify-content: center;
+        width: 100%;
     }
 
     .app-footer-mobile {
         display: none;
     }
+}
+
+.install-desktop-link {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    flex-shrink: 0;
+}
+
+.install-desktop-link[hidden] {
+    display: none !important;
 }
 
 .app-version {
@@ -1061,6 +1196,264 @@ input[type="text"] {
     font-family: inherit;
     cursor: pointer;
     touch-action: manipulation;
+}
+
+.install-banner {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: 895;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 8px 32px var(--shadow);
+}
+
+.install-banner[hidden] {
+    display: none !important;
+}
+
+@supports (-webkit-touch-callout: none) {
+    @media (max-width: 899px) {
+        .install-banner {
+            bottom: 6px;
+        }
+    }
+}
+
+.install-banner-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.install-banner-subtext {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--secondary);
+    font-weight: 400;
+}
+
+.install-banner-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.install-banner-action,
+.install-banner-secondary {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.install-banner-action {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.install-banner-secondary {
+    background: rgba(128, 128, 128, 0.16);
+    color: var(--text);
+}
+
+.install-overlay[hidden] {
+    display: none !important;
+}
+
+.install-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+.install-backdrop {
+    display: none;
+}
+
+.install-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.install-header {
+    position: relative;
+    flex-shrink: 0;
+    padding:
+        max(20px, env(safe-area-inset-top))
+        56px
+        16px
+        20px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.install-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.install-close {
+    position: absolute;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--secondary);
+    box-shadow: 0 2px 8px var(--shadow);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.install-body {
+    flex: 1;
+    overflow-y: auto;
+    padding:
+        20px
+        max(20px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.install-intro {
+    margin: 0 0 20px;
+    color: var(--secondary);
+}
+
+.install-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.install-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.install-step-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(0, 122, 255, 0.12);
+    color: var(--accent);
+}
+
+.install-step-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.install-step-text {
+    margin: 0;
+    padding-top: 2px;
+}
+
+.install-step-text strong {
+    color: var(--text);
+}
+
+.install-modal-action {
+    width: 100%;
+    margin-top: 20px;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+@media (min-width: 900px) {
+    .install-banner,
+    .install-tile {
+        display: none !important;
+    }
+
+    .install-backdrop {
+        display: block;
+        position: absolute;
+        inset: 0;
+        border: none;
+        padding: 0;
+        background: rgba(0, 0, 0, 0.45);
+        cursor: pointer;
+    }
+
+    .install-overlay:not([hidden]) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    .install-panel {
+        position: relative;
+        inset: auto;
+        z-index: 1;
+        width: min(100%, 480px);
+        max-height: 85vh;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+    }
+
+    .install-header {
+        padding: 20px 56px 16px 20px;
+    }
+
+    .install-close {
+        top: 14px;
+        right: 14px;
+    }
+
+    .install-body {
+        padding: 20px 24px 24px;
+    }
 }
 
 .help-trigger {
@@ -1369,8 +1762,8 @@ input[type="text"] {
 </button>
 
 <div class="app-footer app-footer-desktop">
-    <span class="app-version" data-app-version></span>
-    <div class="app-footer-links">
+    <div class="app-footer-top">
+        <span class="app-version" data-app-version></span>
         <a
             class="footer-link"
             href="https://github.com/logwet/opportunity-cost"
@@ -1385,6 +1778,16 @@ input[type="text"] {
             onclick="openPrivacyPolicy()"
         >
             Privacy Policy
+        </button>
+    </div>
+    <div class="app-footer-bottom">
+        <button
+            id="installDesktopLink"
+            class="install-desktop-link"
+            type="button"
+            hidden
+        >
+            Install for offline use
         </button>
     </div>
 </div>
@@ -1499,7 +1902,7 @@ input[type="text"] {
     <label>Purchase Description (Optional)</label>
 
     <div class="row">
-        <input id="description" type="text" placeholder="Headphones">
+        <input id="description" class="text-field" type="text" placeholder="Headphones">
         <button
             id="savePurchase"
             class="primary-button"
@@ -1515,7 +1918,7 @@ input[type="text"] {
     <label>Saved Projections</label>
     <input
         id="logSearch"
-        class="search-input"
+        class="text-field search-input"
         type="search"
         placeholder="Search by name or date"
         autocomplete="off"
@@ -1527,6 +1930,22 @@ input[type="text"] {
 </div>
 
 </div>
+
+<button id="installTile" class="install-tile" type="button" hidden>
+    <span class="install-tile-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12"/>
+            <path d="m7 11 5 5 5-5"/>
+            <path d="M5 21h14"/>
+        </svg>
+    </span>
+    <span class="install-tile-copy">
+        <span class="install-tile-title">Install for offline use</span>
+        <span class="install-tile-desc">
+            Add to your home screen and use the calculator without internet.
+        </span>
+    </span>
+</button>
 
 <button
     class="reset-button reset-button-mobile"
@@ -1626,6 +2045,63 @@ input[type="text"] {
     <button id="updateBannerAction" class="update-banner-action" type="button">
         Refresh
     </button>
+</div>
+
+<div
+    id="installBanner"
+    class="install-banner"
+    role="dialog"
+    aria-labelledby="installBannerTitle"
+    aria-describedby="installBannerDesc"
+    hidden
+>
+    <div>
+        <p id="installBannerTitle" class="install-banner-text">
+            Install for offline use
+        </p>
+        <p id="installBannerDesc" class="install-banner-subtext">
+            Add to your home screen and use the calculator without internet.
+        </p>
+    </div>
+    <div class="install-banner-actions">
+        <button
+            id="installBannerAction"
+            class="install-banner-action"
+            type="button"
+        >
+            Install
+        </button>
+        <button
+            id="installBannerSnooze"
+            class="install-banner-secondary"
+            type="button"
+        >
+            Not now
+        </button>
+    </div>
+</div>
+
+<div id="installOverlay" class="install-overlay" hidden>
+    <button
+        class="install-backdrop"
+        type="button"
+        aria-label="Close"
+        onclick="closeInstallModal()"
+    ></button>
+    <div class="install-panel" role="dialog" aria-labelledby="installModalTitle">
+        <div class="install-header">
+            <h2 id="installModalTitle">Install app</h2>
+            <button
+                id="installModalClose"
+                class="install-close"
+                type="button"
+                aria-label="Close"
+            >
+                ×
+            </button>
+        </div>
+        <div id="installModalBody" class="install-body"></div>
+    </div>
 </div>
 
 <script>
@@ -4106,6 +4582,659 @@ function setupNumberInputSteppers() {
 
 let pendingServiceWorkerRegistration = null;
 
+const INSTALL_PROMPT_STORAGE_KEY = 'installPromptState';
+const INSTALL_PROMPT_MIN_MS = 30000;
+const INSTALL_SNOOZE_DAYS = [3, 7, 14, 30];
+
+const INSTALL_ICONS = {
+    share: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v10"/><path d="m8 7 4-4 4 4"/><path d="M5 21h14"/><path d="M7 15v4h10v-4"/></svg>`,
+    plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>`,
+    home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>`,
+    download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>`,
+    menu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>`,
+    app: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg>`
+};
+
+let deferredInstallPrompt = null;
+let installPromptPageOpenedAt = Date.now();
+let installPromptServiceWorkerReady = false;
+let installPromptShowTimer = null;
+
+function isStandaloneDisplay() {
+    return (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true
+    );
+}
+
+function isMobileBrowser() {
+    if (isStandaloneDisplay()) {
+        return false;
+    }
+
+    const platform = getInstallPlatform();
+
+    if (platform === 'ios' || platform === 'android') {
+        return true;
+    }
+
+    return (
+        window.matchMedia('(max-width: 899px)').matches &&
+        navigator.maxTouchPoints > 0
+    );
+}
+
+function isInstallServiceWorkerReady() {
+    if (installPromptServiceWorkerReady) {
+        return true;
+    }
+
+    if (
+        getInstallPlatform() === 'ios' &&
+        Date.now() - installPromptPageOpenedAt >= INSTALL_PROMPT_MIN_MS
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+function markInstallPromptServiceWorkerReady() {
+    if (installPromptServiceWorkerReady) {
+        return;
+    }
+
+    installPromptServiceWorkerReady = true;
+    tryShowInstallPrompt();
+}
+
+function getInstallPlatform() {
+    const ua = navigator.userAgent;
+
+    if (
+        /iPad|iPhone|iPod/.test(ua) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    ) {
+        return 'ios';
+    }
+
+    if (/Android/.test(ua)) {
+        return 'android';
+    }
+
+    return 'other';
+}
+
+function getDesktopBrowser() {
+    const ua = navigator.userAgent;
+
+    if (/Edg\//.test(ua)) {
+        return 'edge';
+    }
+
+    if (/Chrome\//.test(ua)) {
+        return 'chrome';
+    }
+
+    if (/Safari/.test(ua)) {
+        return 'safari';
+    }
+
+    if (/Firefox\//.test(ua)) {
+        return 'firefox';
+    }
+
+    return 'other';
+}
+
+function isDesktopBrowser() {
+    if (isStandaloneDisplay()) {
+        return false;
+    }
+
+    return window.matchMedia('(min-width: 900px)').matches;
+}
+
+function readInstallPromptState() {
+    try {
+        const saved = localStorage.getItem(INSTALL_PROMPT_STORAGE_KEY);
+
+        if (!saved) {
+            return { snoozeCount: 0, snoozeUntil: 0 };
+        }
+
+        const parsed = JSON.parse(saved);
+
+        return {
+            snoozeCount: parsed.snoozeCount || 0,
+            snoozeUntil: parsed.snoozeUntil || 0
+        };
+    } catch {
+        return { snoozeCount: 0, snoozeUntil: 0 };
+    }
+}
+
+function writeInstallPromptState(updates) {
+    const state = {
+        ...readInstallPromptState(),
+        ...updates
+    };
+
+    localStorage.setItem(
+        INSTALL_PROMPT_STORAGE_KEY,
+        JSON.stringify(state)
+    );
+
+    return state;
+}
+
+function isInstallPromptSnoozed() {
+    return Date.now() < readInstallPromptState().snoozeUntil;
+}
+
+function getInstallSnoozeUntil(snoozeCount) {
+    const index = Math.min(
+        Math.max(snoozeCount - 1, 0),
+        INSTALL_SNOOZE_DAYS.length - 1
+    );
+    const days = INSTALL_SNOOZE_DAYS[index];
+
+    return Date.now() + days * 24 * 60 * 60 * 1000;
+}
+
+function isUpdateBannerVisible() {
+    const banner = document.getElementById('updateBanner');
+
+    return banner && !banner.hidden;
+}
+
+function canShowInstallPrompt() {
+    if (!isMobileBrowser()) {
+        return false;
+    }
+
+    if (!isInstallServiceWorkerReady()) {
+        return false;
+    }
+
+    if (Date.now() - installPromptPageOpenedAt < INSTALL_PROMPT_MIN_MS) {
+        return false;
+    }
+
+    if (isInstallPromptSnoozed()) {
+        return false;
+    }
+
+    if (isUpdateBannerVisible()) {
+        return false;
+    }
+
+    const banner = document.getElementById('installBanner');
+
+    return banner && banner.hidden;
+}
+
+function showInstallBanner() {
+    if (!canShowInstallPrompt()) {
+        return;
+    }
+
+    document.getElementById('installBanner').hidden = false;
+}
+
+function hideInstallBanner() {
+    const banner = document.getElementById('installBanner');
+
+    if (banner) {
+        banner.hidden = true;
+    }
+}
+
+function updateInstallTileVisibility() {
+    const tile = document.getElementById('installTile');
+
+    if (!tile) {
+        return;
+    }
+
+    tile.hidden = !isMobileBrowser();
+}
+
+function hideInstallTile() {
+    const tile = document.getElementById('installTile');
+
+    if (tile) {
+        tile.hidden = true;
+    }
+}
+
+function updateInstallDesktopLinkVisibility() {
+    const link = document.getElementById('installDesktopLink');
+
+    if (!link) {
+        return;
+    }
+
+    link.hidden = !isDesktopBrowser();
+}
+
+function hideInstallDesktopLink() {
+    const link = document.getElementById('installDesktopLink');
+
+    if (link) {
+        link.hidden = true;
+    }
+}
+
+function tryShowInstallPrompt() {
+    if (canShowInstallPrompt()) {
+        showInstallBanner();
+    }
+}
+
+function scheduleInstallPromptShow() {
+    if (installPromptShowTimer || !isMobileBrowser()) {
+        return;
+    }
+
+    const elapsed = Date.now() - installPromptPageOpenedAt;
+    const remaining = Math.max(0, INSTALL_PROMPT_MIN_MS - elapsed);
+
+    installPromptShowTimer = window.setTimeout(() => {
+        installPromptShowTimer = null;
+        tryShowInstallPrompt();
+    }, remaining);
+}
+
+function watchServiceWorkerRegistration(registration) {
+    if (registration.active) {
+        markInstallPromptServiceWorkerReady();
+        return;
+    }
+
+    const worker = registration.installing || registration.waiting;
+
+    if (!worker) {
+        return;
+    }
+
+    worker.addEventListener('statechange', () => {
+        if (worker.state === 'activated') {
+            markInstallPromptServiceWorkerReady();
+        }
+    });
+
+    if (worker.state === 'activated') {
+        markInstallPromptServiceWorkerReady();
+    }
+}
+
+function snoozeInstallPrompt() {
+    const state = readInstallPromptState();
+    const snoozeCount = state.snoozeCount + 1;
+
+    writeInstallPromptState({
+        snoozeCount,
+        snoozeUntil: getInstallSnoozeUntil(snoozeCount)
+    });
+
+    hideInstallBanner();
+    closeInstallModal();
+}
+
+function markInstallPromptComplete() {
+    writeInstallPromptState({
+        snoozeCount: 99,
+        snoozeUntil: Number.MAX_SAFE_INTEGER
+    });
+
+    hideInstallBanner();
+    hideInstallTile();
+    hideInstallDesktopLink();
+    closeInstallModal();
+}
+
+function renderInstallStep(icon, text) {
+    return `
+        <li class="install-step">
+            <span class="install-step-icon">${icon}</span>
+            <p class="install-step-text">${text}</p>
+        </li>
+    `;
+}
+
+function renderInstallSteps(steps) {
+    return `<ol class="install-steps">${steps.join('')}</ol>`;
+}
+
+function renderIosInstallGuide() {
+    return `
+        <p class="install-intro">
+            Install this calculator on your iPhone or iPad to use it offline,
+            full screen, from your home screen.
+        </p>
+        ${renderInstallSteps([
+            renderInstallStep(
+                INSTALL_ICONS.share,
+                'Tap the <strong>Share</strong> button in Safari’s toolbar (the square with an arrow pointing up).'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.plus,
+                'Scroll the menu and tap <strong>Add to Home Screen</strong>.'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.home,
+                'Tap <strong>Add</strong>, then open the app from your home screen.'
+            )
+        ])}
+    `;
+}
+
+function renderAndroidInstallGuide(includeNativeButton) {
+    const nativeButton = includeNativeButton
+        ? `<button id="installNativeAction" class="install-modal-action" type="button">Install app</button>`
+        : '';
+    const steps = includeNativeButton
+        ? [
+              renderInstallStep(
+                  INSTALL_ICONS.download,
+                  'Tap <strong>Install app</strong> below if your browser offers a one-tap install.'
+              ),
+              renderInstallStep(
+                  INSTALL_ICONS.menu,
+                  'If you don’t see that option, open the browser menu (⋮) and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.'
+              )
+          ]
+        : [
+              renderInstallStep(
+                  INSTALL_ICONS.menu,
+                  'Open the browser menu (⋮) and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.'
+              )
+          ];
+
+    return `
+        <p class="install-intro">
+            Install this calculator on your Android device to use it offline
+            and open it like a regular app.
+        </p>
+        ${renderInstallSteps(steps)}
+        ${nativeButton}
+    `;
+}
+
+function renderGenericMobileInstallGuide() {
+    return `
+        <p class="install-intro">
+            Add this calculator to your home screen to use it offline and open
+            it like a regular app.
+        </p>
+        ${renderInstallSteps([
+            renderInstallStep(
+                INSTALL_ICONS.share,
+                'Open your browser’s <strong>Share</strong> or <strong>Menu</strong> options.'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.plus,
+                'Choose <strong>Add to Home Screen</strong> or <strong>Install app</strong>.'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.home,
+                'Confirm, then launch it from your home screen.'
+            )
+        ])}
+    `;
+}
+
+function renderDesktopNativeInstallButton() {
+    return `<button id="installNativeAction" class="install-modal-action" type="button">Install app</button>`;
+}
+
+function renderChromeEdgeDesktopGuide(browser, canNativeInstall) {
+    const browserName = browser === 'edge' ? 'Edge' : 'Chrome';
+    const menuLabel =
+        browser === 'edge'
+            ? 'Apps'
+            : 'Install Opportunity Cost Calculator';
+    const nativeButton = canNativeInstall
+        ? renderDesktopNativeInstallButton()
+        : '';
+
+    return `
+        <p class="install-intro">
+            Install this calculator as an app on your computer to open it from
+            your dock or taskbar and use it offline.
+        </p>
+        ${renderInstallSteps([
+            renderInstallStep(
+                INSTALL_ICONS.download,
+                canNativeInstall
+                    ? 'Tap <strong>Install app</strong> below if your browser offers a one-tap install.'
+                    : 'Look for an <strong>Install</strong> icon in the address bar, to the right of the web address.'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.app,
+                `In ${browserName}, open the browser menu (⋮) and choose <strong>${menuLabel}</strong> or <strong>Install this site as an app</strong>.`
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.home,
+                'Confirm the install, then launch it from your applications, dock, or taskbar.'
+            )
+        ])}
+        ${nativeButton}
+    `;
+}
+
+function renderSafariDesktopGuide() {
+    return `
+        <p class="install-intro">
+            Add this calculator to your Mac’s Dock to open it like an app and
+            use it offline after your first visit.
+        </p>
+        ${renderInstallSteps([
+            renderInstallStep(
+                INSTALL_ICONS.plus,
+                'In Safari, open the menu bar and choose <strong>File → Add to Dock</strong>.'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.share,
+                'Or click the <strong>Share</strong> button in the toolbar and choose <strong>Add to Dock</strong>.'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.home,
+                'Launch it from your Dock. Safari keeps your data on this device only.'
+            )
+        ])}
+    `;
+}
+
+function renderFirefoxDesktopGuide() {
+    return `
+        <p class="install-intro">
+            Firefox on desktop does not support installing this calculator as a
+            standalone app. You can still use it in the browser or install it
+            another way.
+        </p>
+        ${renderInstallSteps([
+            renderInstallStep(
+                INSTALL_ICONS.app,
+                'For a one-click install, open this page in <strong>Chrome</strong> or <strong>Edge</strong> and use their install option.'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.home,
+                'In Firefox, bookmark this page for quick access from your bookmarks bar.'
+            )
+        ])}
+    `;
+}
+
+function renderGenericDesktopGuide(canNativeInstall) {
+    const nativeButton = canNativeInstall
+        ? renderDesktopNativeInstallButton()
+        : '';
+
+    return `
+        <p class="install-intro">
+            Install this calculator as an app to use it offline and open it
+            from your applications or dock.
+        </p>
+        ${renderInstallSteps([
+            renderInstallStep(
+                INSTALL_ICONS.download,
+                'Look for an <strong>Install</strong> or <strong>Add to Dock</strong> option in your browser’s toolbar or menu.'
+            ),
+            renderInstallStep(
+                INSTALL_ICONS.menu,
+                'If you don’t see one, try Chrome, Edge, or Safari for the best install experience.'
+            )
+        ])}
+        ${nativeButton}
+    `;
+}
+
+function renderDesktopInstallGuide(canNativeInstall) {
+    const browser = getDesktopBrowser();
+
+    if (browser === 'chrome' || browser === 'edge') {
+        return renderChromeEdgeDesktopGuide(browser, canNativeInstall);
+    }
+
+    if (browser === 'safari') {
+        return renderSafariDesktopGuide();
+    }
+
+    if (browser === 'firefox') {
+        return renderFirefoxDesktopGuide();
+    }
+
+    return renderGenericDesktopGuide(canNativeInstall);
+}
+
+function populateInstallModal() {
+    const body = document.getElementById('installModalBody');
+
+    if (isDesktopBrowser()) {
+        body.innerHTML = renderDesktopInstallGuide(Boolean(deferredInstallPrompt));
+    } else {
+        const platform = getInstallPlatform();
+        const canNativeInstall = platform === 'android' && deferredInstallPrompt;
+
+        if (platform === 'ios') {
+            body.innerHTML = renderIosInstallGuide();
+        } else if (platform === 'android') {
+            body.innerHTML = renderAndroidInstallGuide(canNativeInstall);
+        } else {
+            body.innerHTML = renderGenericMobileInstallGuide();
+        }
+    }
+
+    document
+        .getElementById('installNativeAction')
+        ?.addEventListener('click', triggerNativeInstall);
+}
+
+function openInstallModal() {
+    populateInstallModal();
+    document.getElementById('installOverlay').hidden = false;
+}
+
+function closeInstallModal() {
+    document.getElementById('installOverlay').hidden = true;
+}
+
+async function triggerNativeInstall() {
+    if (!deferredInstallPrompt) {
+        return null;
+    }
+
+    const prompt = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    prompt.prompt();
+
+    const { outcome } = await prompt.userChoice;
+
+    if (outcome === 'accepted') {
+        markInstallPromptComplete();
+    }
+
+    return outcome;
+}
+
+async function handleInstallRequest() {
+    const outcome = await triggerNativeInstall();
+
+    if (outcome === 'accepted') {
+        return;
+    }
+
+    openInstallModal();
+}
+
+function setupMobileInstallPrompt() {
+    updateInstallTileVisibility();
+    scheduleInstallPromptShow();
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready
+            .then(() => {
+                markInstallPromptServiceWorkerReady();
+            })
+            .catch(() => {});
+
+        if (navigator.serviceWorker.controller) {
+            markInstallPromptServiceWorkerReady();
+        }
+    } else if (getInstallPlatform() === 'ios') {
+        markInstallPromptServiceWorkerReady();
+    }
+
+    document
+        .getElementById('installTile')
+        ?.addEventListener('click', openInstallModal);
+
+    document
+        .getElementById('installBannerAction')
+        ?.addEventListener('click', openInstallModal);
+
+    document
+        .getElementById('installBannerSnooze')
+        ?.addEventListener('click', snoozeInstallPrompt);
+}
+
+function setupDesktopInstallPrompt() {
+    updateInstallDesktopLinkVisibility();
+
+    document
+        .getElementById('installDesktopLink')
+        ?.addEventListener('click', handleInstallRequest);
+}
+
+function setupInstallPrompt() {
+    if (isStandaloneDisplay()) {
+        return;
+    }
+
+    window.addEventListener('beforeinstallprompt', event => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+    });
+
+    window.addEventListener('appinstalled', () => {
+        markInstallPromptComplete();
+    });
+
+    document
+        .getElementById('installModalClose')
+        ?.addEventListener('click', closeInstallModal);
+
+    if (isMobileBrowser()) {
+        setupMobileInstallPrompt();
+    }
+
+    if (isDesktopBrowser()) {
+        setupDesktopInstallPrompt();
+    }
+}
+
 function showUpdateBanner(registration) {
     if (!navigator.serviceWorker.controller) {
         return;
@@ -4113,6 +5242,7 @@ function showUpdateBanner(registration) {
 
     pendingServiceWorkerRegistration = registration;
     document.getElementById('updateBanner').hidden = false;
+    hideInstallBanner();
 }
 
 function applyServiceWorkerUpdate() {
@@ -4159,6 +5289,7 @@ function setupServiceWorkerUpdates() {
         navigator.serviceWorker
             .register('./sw.js')
             .then(registration => {
+                watchServiceWorkerRegistration(registration);
                 checkWaitingServiceWorker(registration);
 
                 registration.addEventListener('updatefound', () => {
@@ -4200,6 +5331,7 @@ setupMobileHelp();
 setupNumberInputSteppers();
 setupChartHover();
 setupServiceWorkerUpdates();
+setupInstallPrompt();
 loadSettings();
 applyTheme();
 calculate();
