@@ -6,6 +6,20 @@ A free calculator that helps you think through a purchase before you make it. En
 
 Everything runs in your browser. There is no account, no sign-up, and nothing you enter is sent to a server.
 
+<p align="center">
+  <img src="assets/readme/iphone-17-pro-light.png" alt="Opportunity Cost Calculator on iPhone 17 Pro — purchase inputs in light mode" width="280">
+  &nbsp;&nbsp;
+  <img src="assets/readme/iphone-17-pro-dark.png" alt="Opportunity Cost Calculator on iPhone 17 Pro — results and chart in dark mode" width="280">
+</p>
+
+<p align="center"><em>iPhone 17 Pro — inputs (light) and projections with chart (dark)</em></p>
+
+<p align="center">
+  <img src="assets/readme/macbook-air.png" alt="Opportunity Cost Calculator in a browser window — desktop layout with chart in dark mode" width="520">
+</p>
+
+<p align="center"><em>Desktop browser — dark mode</em></p>
+
 ## What is opportunity cost?
 
 When you spend money on one thing, you give up the chance to use it for something else. This app puts a number on that trade-off: it compares the long-term value of **buying** something with the long-term value of **not buying** and putting the money to work another way (investing or saving).

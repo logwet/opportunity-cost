@@ -866,6 +866,15 @@ input[type="text"] {
     color: var(--secondary);
 }
 
+.app-footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.footer-link,
 .privacy-link {
     margin: 0;
     padding: 8px 0;
@@ -875,7 +884,6 @@ input[type="text"] {
     font-size: 14px;
     font-family: inherit;
     cursor: pointer;
-    text-align: right;
     text-decoration: underline;
     text-underline-offset: 2px;
     flex-shrink: 0;
@@ -1362,13 +1370,23 @@ input[type="text"] {
 
 <div class="app-footer app-footer-desktop">
     <span class="app-version" data-app-version></span>
-    <button
-        class="privacy-link"
-        type="button"
-        onclick="openPrivacyPolicy()"
-    >
-        Privacy Policy
-    </button>
+    <div class="app-footer-links">
+        <a
+            class="footer-link"
+            href="https://github.com/logwet/opportunity-cost"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Source code
+        </a>
+        <button
+            class="privacy-link"
+            type="button"
+            onclick="openPrivacyPolicy()"
+        >
+            Privacy Policy
+        </button>
+    </div>
 </div>
 
 </div>
@@ -1520,13 +1538,23 @@ input[type="text"] {
 
 <div class="app-footer app-footer-mobile">
     <span class="app-version" data-app-version></span>
-    <button
-        class="privacy-link"
-        type="button"
-        onclick="openPrivacyPolicy()"
-    >
-        Privacy Policy
-    </button>
+    <div class="app-footer-links">
+        <a
+            class="footer-link"
+            href="https://github.com/logwet/opportunity-cost"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Source code
+        </a>
+        <button
+            class="privacy-link"
+            type="button"
+            onclick="openPrivacyPolicy()"
+        >
+            Privacy Policy
+        </button>
+    </div>
 </div>
 </div>
 
