@@ -1,7 +1,7 @@
 {
     "name": "Opportunity Cost Calculator",
     "short_name": "Opp Cost",
-    "description": "Compare a purchase to investing or saving instead. Projections to retirement, inflation-adjusted.",
+    "description": "Compare a purchase to investing or saving instead. Inflation-adjusted projections to your retirement age. Private, installable, works offline.",
     "id": "./index.html",
     "start_url": "./index.html",
     "scope": "./",

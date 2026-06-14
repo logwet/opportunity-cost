@@ -7,18 +7,18 @@
 Enter a purchase price and the app projects:
 
 - **Asset** — how the thing you buy might change in value (depreciating, no change, or appreciating).
-- **Alternative** — how the same money could grow if invested (~9% default) or saved (~3.2% default) instead.
+- **Alternative** — how the same money could grow if invested (~9.3% default) or saved (~3.24% default) instead.
 
-Both paths use a shared inflation assumption (default 3%). The headline result is **worth at your retirement age** (default 67, configurable). Display modes: Worth of Asset, Opportunity Cost (default), or Worth of Alternative.
+Both paths use a shared inflation assumption (default 3%). The headline result is **worth at your retirement age** (default 67, Australian preservation age, configurable). Display modes: Worth of Asset, Opportunity Cost (default), or Worth of Alternative.
 
 ## Key features
 
 - Live projections at 5, 10, 20, 30, and 50 years plus retirement at your chosen age
-- Nominal and after-inflation columns; growth chart with milestone guides
-- Save scenarios to a local log; restore settings from saved entries
-- Installable PWA with offline support after first visit
-- Light/dark mode; desktop two-column layout
-- All data stored in browser localStorage on device only
+- Nominal and after-inflation columns; growth chart with year-by-year inspection
+- Save scenarios to a local log with search; restore settings from saved entries
+- Installable PWA with offline support after first visit (iPhone, Android, desktop)
+- Light/dark mode; responsive two-column desktop layout
+- All data stored in browser localStorage on device only; no account or telemetry
 
 ## URLs
 

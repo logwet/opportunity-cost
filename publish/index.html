@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#f2f2f7">
 <meta
     name="description"
-    content="Free opportunity cost calculator. Compare a purchase against investing or saving instead — projections to retirement, inflation-adjusted, private and offline."
+    content="Free opportunity cost calculator. Compare a purchase against investing or saving instead — inflation-adjusted projections to your retirement age (default 67). Private, installable PWA; works offline after first visit."
 >
 <meta name="robots" content="index, follow">
 <meta name="author" content="logwet">
@@ -22,11 +22,12 @@
 <link rel="sitemap" type="application/xml" href="./sitemap.xml">
 
 <meta property="og:type" content="website">
+<meta property="og:locale" content="en">
 <meta property="og:site_name" content="Opportunity Cost Calculator">
 <meta property="og:title" content="Opportunity Cost Calculator">
 <meta
     property="og:description"
-    content="Should you buy it? Compare a purchase price to investing or saving the money instead — projections to retirement, inflation-adjusted."
+    content="Should you buy it? Compare a purchase to investing or saving the money instead — inflation-adjusted projections to retirement. Free, private, installable, offline-capable."
 >
 <meta property="og:url" content="https://logwet.github.io/opportunity-cost/">
 <meta
@@ -35,17 +36,19 @@
 >
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="Opportunity Cost Calculator app icon">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Opportunity Cost Calculator">
 <meta
     name="twitter:description"
-    content="Free calculator: compare a purchase vs investing or saving. Projections to your retirement age, inflation-adjusted, private PWA."
+    content="Free calculator: compare a purchase vs investing or saving. Inflation-adjusted projections to your retirement age. Private PWA — no account, no telemetry."
 >
 <meta
     name="twitter:image"
     content="https://logwet.github.io/opportunity-cost/icons/icon-512.png"
 >
+<meta name="twitter:image:alt" content="Opportunity Cost Calculator app icon">
 
 <title>Opportunity Cost Calculator</title>
 
@@ -54,24 +57,33 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Opportunity Cost Calculator",
-    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. Inflation-adjusted projections to a configurable retirement age (default 67).",
+    "description": "Compare what a purchase could be worth over time against investing or saving the money instead. Inflation-adjusted projections to a configurable retirement age (default 67, Australian preservation age). Currency-agnostic; runs entirely in the browser with no account or server.",
     "url": "https://logwet.github.io/opportunity-cost/",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Any",
     "browserRequirements": "Requires JavaScript",
     "inLanguage": "en",
     "isAccessibleForFree": true,
+    "softwareVersion": "__INJECT_APP_VERSION__",
+    "creator": {
+        "@type": "Person",
+        "name": "logwet",
+        "url": "https://github.com/logwet"
+    },
     "offers": {
         "@type": "Offer",
-        "price": "0"
+        "price": "0",
+        "priceCurrency": "USD"
     },
     "featureList": [
         "Purchase vs invest or save comparison",
-        "Asset depreciation and appreciation",
-        "Inflation-adjusted projections",
+        "Asset depreciation, flat value, and appreciation",
+        "Inflation-adjusted nominal and real projections",
         "Configurable retirement age (default 67)",
-        "Offline installable PWA",
-        "Private on-device storage"
+        "Saved projections log with search",
+        "Installable offline PWA",
+        "Private on-device storage; no telemetry",
+        "Light and dark mode"
     ]
 }
 </script>
@@ -1717,7 +1729,7 @@ input[type="search"].small-input {
         id="returnRate"
         class="small-input"
         type="number"
-        value="9"
+        value="9.3"
         step="0.01"
         inputmode="decimal"
         data-stepper-step="1"
@@ -2115,8 +2127,8 @@ const DEFAULT_RETIREMENT_AGE = 67;
 const DEFAULT_CURRENT_AGE = 25;
 const MIN_CURRENT_AGE = 1;
 const MAX_AGE = 120;
-const DEFAULT_INVEST_RETURN = 9;
-const DEFAULT_SAVE_RETURN = 3.2;
+const DEFAULT_INVEST_RETURN = 9.3;
+const DEFAULT_SAVE_RETURN = 3.24;
 const DEFAULT_DEPRECIATING_RETURN = -5;
 const DEFAULT_FLAT_RETURN = 0;
 const DEFAULT_APPRECIATING_RETURN = 5;
@@ -2238,9 +2250,9 @@ const UI_TOOLTIPS = {
     retirementAge:
         'Target age for retirement projections (default 67, Australian preservation age). Must be at least your current age and no more than 120.',
     modeInvest:
-        'Compare against investing in growth assets. Default alternative return is 9%.',
+        'Compare against investing in growth assets. Default alternative return is 9.3%.',
     modeSave:
-        'Compare against saving in low-risk accounts. Default alternative return is 3.2%.',
+        'Compare against saving in low-risk accounts. Default alternative return is 3.24%.',
     returnRate:
         'Expected annual return for the selected alternative (Invest or Save). After-inflation results use this together with the inflation rate.',
     inflationRate:
