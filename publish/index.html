@@ -607,6 +607,197 @@ input[type="search"].small-input {
     opacity: 0.45;
 }
 
+.display-card {
+    position: relative;
+    padding-bottom: 36px;
+}
+
+.share-projection-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--secondary);
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.share-projection-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.share-overlay[hidden] {
+    display: none !important;
+}
+
+.share-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+.share-backdrop {
+    position: absolute;
+    inset: 0;
+    border: none;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+}
+
+.share-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.share-header {
+    position: relative;
+    flex-shrink: 0;
+    padding:
+        max(20px, env(safe-area-inset-top))
+        56px
+        16px
+        20px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.share-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.share-close {
+    position: absolute;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--secondary);
+    box-shadow: 0 2px 8px var(--shadow);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.share-body {
+    flex: 1;
+    overflow-y: auto;
+    padding:
+        20px
+        max(20px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.share-body p {
+    margin: 0 0 14px;
+    color: var(--secondary);
+    font-size: 14px;
+}
+
+.share-url-field {
+    margin-bottom: 16px;
+}
+
+.share-url-field input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgba(128, 128, 128, 0.28);
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 14px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    line-height: 1.35;
+}
+
+.share-copy-btn {
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.share-copy-btn.copied {
+    background: #34c759;
+}
+
+@media (max-width: 899px) {
+    .share-backdrop {
+        display: none;
+    }
+
+    .share-panel {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+    }
+}
+
+@media (min-width: 900px) {
+    .share-overlay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    .share-panel {
+        z-index: 1;
+        width: 100%;
+        max-width: 520px;
+        max-height: min(80vh, 360px);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+    }
+
+    .share-header {
+        padding:
+            20px
+            56px
+            16px
+            20px;
+    }
+
+    .share-close {
+        top: 12px;
+        right: 12px;
+    }
+
+    .share-body {
+        padding: 20px 20px 24px;
+    }
+}
+
 .display-mode-control {
     margin-bottom: 16px;
 }
@@ -1283,6 +1474,80 @@ input[type="search"].small-input {
     color: var(--text);
 }
 
+.notice-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 910;
+    padding-top: env(safe-area-inset-top);
+    transform: translateY(-100%);
+    transition: transform 0.32s ease;
+    pointer-events: none;
+}
+
+.notice-banner.notice-banner--visible {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.notice-banner[hidden] {
+    display: none !important;
+}
+
+.notice-banner-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 12px;
+    padding: 12px 12px 12px 14px;
+    border-radius: 0 0 14px 14px;
+    background: var(--card);
+    box-shadow: 0 8px 24px var(--shadow);
+    border-bottom: 3px solid #ff9500;
+}
+
+.notice-banner-open {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.notice-banner-dismiss {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--secondary);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+@media (min-width: 900px) {
+    .notice-banner-inner {
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
 .install-overlay[hidden] {
     display: none !important;
 }
@@ -1570,6 +1835,18 @@ input[type="search"].small-input {
     display: none !important;
 }
 
+.disclaimer-card {
+    border-left: 3px solid #ff9500;
+    padding: 16px 18px 16px 15px;
+}
+
+.disclaimer-text {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--secondary);
+}
+
 .page-header-actions {
     display: flex;
     align-items: center;
@@ -1807,7 +2084,7 @@ input[type="search"].small-input {
 </div>
 <div class="app-column app-column-results">
 
-<div class="card">
+<div class="card display-card">
     <label>Display</label>
     <div class="segmented-control display-mode-control compact">
         <button id="modeWorthAsset" type="button">
@@ -1837,6 +2114,18 @@ input[type="search"].small-input {
     </div>
 
     <p id="displayModeExplanation" class="display-mode-explanation"></p>
+    <button
+        id="shareProjectionBtn"
+        class="share-projection-btn"
+        type="button"
+        aria-label="Share projection"
+    >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <path d="M16 6l-4-4-4 4"/>
+            <path d="M12 2v14"/>
+        </svg>
+    </button>
 </div>
 
 <div class="card">
@@ -1908,6 +2197,17 @@ input[type="search"].small-input {
             </div>
         </div>
     </div>
+</div>
+
+<div class="card disclaimer-card" role="note" aria-label="Important disclaimer">
+    <p id="disclaimerInlineText" class="disclaimer-text">
+        Projections shown here are estimates only—not guaranteed outcomes. This
+        calculator does not account for tax, fees, or other real-world costs or
+        losses, and is intended as a general illustration rather than personal
+        guidance. Past performance is not a reliable indicator of future results.
+        Nothing here constitutes financial advice; for advice tailored to your
+        circumstances, consult a qualified and authorised financial adviser.
+    </p>
 </div>
 
 <div class="card">
@@ -1989,6 +2289,83 @@ input[type="search"].small-input {
 </div>
 </div>
 
+<div id="disclaimerOverlay" class="privacy-overlay" hidden>
+    <button
+        class="privacy-backdrop"
+        type="button"
+        aria-label="Close disclaimer"
+        onclick="closeDisclaimerModal()"
+    ></button>
+    <div
+        class="privacy-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="disclaimerTitle"
+    >
+        <div class="privacy-header">
+            <h2 id="disclaimerTitle">Important Notice</h2>
+            <button
+                class="privacy-close"
+                type="button"
+                aria-label="Close"
+                onclick="closeDisclaimerModal()"
+            >
+                ×
+            </button>
+        </div>
+        <div class="privacy-body">
+            <p id="disclaimerModalText" class="disclaimer-text"></p>
+        </div>
+    </div>
+</div>
+
+<div id="shareOverlay" class="share-overlay" hidden>
+    <button
+        class="share-backdrop"
+        type="button"
+        aria-label="Close share dialog"
+        onclick="closeShareDialog()"
+    ></button>
+    <div
+        class="share-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="shareTitle"
+    >
+        <div class="share-header">
+            <h2 id="shareTitle">Share projection</h2>
+            <button
+                class="share-close"
+                type="button"
+                aria-label="Close"
+                onclick="closeShareDialog()"
+            >
+                ×
+            </button>
+        </div>
+        <div class="share-body">
+            <p>
+                Send this link so someone else can open the same projection in
+                their browser.
+            </p>
+            <div class="share-url-field">
+                <input
+                    id="shareUrlInput"
+                    type="url"
+                    readonly
+                    spellcheck="false"
+                    autocapitalize="off"
+                    autocomplete="off"
+                    aria-label="Share link"
+                >
+            </div>
+            <button id="shareCopyBtn" class="share-copy-btn" type="button">
+                Copy link
+            </button>
+        </div>
+    </div>
+</div>
+
 <div id="privacyOverlay" class="privacy-overlay" hidden>
     <button
         class="privacy-backdrop"
@@ -2044,6 +2421,32 @@ input[type="search"].small-input {
     hidden
 >
     <p id="helpPopoverText"></p>
+</div>
+
+<div
+    id="noticeBanner"
+    class="notice-banner"
+    role="region"
+    aria-label="Important notice"
+    hidden
+>
+    <div class="notice-banner-inner">
+        <button
+            id="noticeBannerOpen"
+            class="notice-banner-open"
+            type="button"
+        >
+            Important Notice
+        </button>
+        <button
+            id="noticeBannerDismiss"
+            class="notice-banner-dismiss"
+            type="button"
+            aria-label="Dismiss notice"
+        >
+            ×
+        </button>
+    </div>
 </div>
 
 <div
@@ -3912,6 +4315,486 @@ function applySettingsSnapshot(snapshot) {
     updateDisplayModeUI();
 }
 
+const SHARE_QUERY_FLAG = 'share';
+
+function buildShareUrl() {
+    const snapshot = captureSettingsSnapshot();
+    const url = new URL(window.location.href);
+
+    url.search = '';
+    url.hash = '';
+
+    const params = url.searchParams;
+
+    params.set(SHARE_QUERY_FLAG, '1');
+    params.set('amt', document.getElementById('amount').value);
+    params.set('am', snapshot.assetMode);
+    params.set('rm', snapshot.returnMode);
+    params.set('dm', snapshot.displayMode);
+    params.set('ir', snapshot.investReturnRate);
+    params.set('sr', snapshot.saveReturnRate);
+    params.set('dar', snapshot.depreciatingAssetRate);
+    params.set('aar', snapshot.appreciatingAssetRate);
+    params.set('inf', snapshot.inflationRate);
+    params.set('ca', snapshot.currentAge);
+    params.set('ra', snapshot.retirementAge);
+    params.set('cv', snapshot.chartValueMode);
+
+    return url.toString();
+}
+
+function parseShareParams() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get(SHARE_QUERY_FLAG) !== '1') {
+        return null;
+    }
+
+    return {
+        amount: params.get('amt'),
+        assetMode: params.get('am'),
+        returnMode: params.get('rm'),
+        displayMode: params.get('dm'),
+        investReturnRate: params.get('ir'),
+        saveReturnRate: params.get('sr'),
+        depreciatingAssetRate: params.get('dar'),
+        appreciatingAssetRate: params.get('aar'),
+        inflationRate: params.get('inf'),
+        currentAge: params.get('ca'),
+        retirementAge: params.get('ra'),
+        chartValueMode: params.get('cv')
+    };
+}
+
+function applyShareParamsFromUrl() {
+    const shared = parseShareParams();
+
+    if (!shared) {
+        return false;
+    }
+
+    const amount = parseFloat(shared.amount);
+
+    if (Number.isFinite(amount) && amount >= 0) {
+        document.getElementById('amount').value = String(amount);
+    }
+
+    applySettingsSnapshot({
+        assetMode:
+            shared.assetMode === 'depreciating' ||
+            shared.assetMode === 'flat' ||
+            shared.assetMode === 'appreciating'
+                ? shared.assetMode
+                : undefined,
+        returnMode:
+            shared.returnMode === 'invest' || shared.returnMode === 'save'
+                ? shared.returnMode
+                : undefined,
+        displayMode: shared.displayMode ?? undefined,
+        investReturnRate: shared.investReturnRate ?? undefined,
+        saveReturnRate: shared.saveReturnRate ?? undefined,
+        depreciatingAssetRate: shared.depreciatingAssetRate ?? undefined,
+        appreciatingAssetRate: shared.appreciatingAssetRate ?? undefined,
+        inflationRate: shared.inflationRate ?? undefined,
+        currentAge: shared.currentAge ?? undefined,
+        retirementAge: shared.retirementAge ?? undefined,
+        chartValueMode: shared.chartValueMode ?? undefined
+    });
+
+    selectedLogId = null;
+
+    clearShareParamsFromUrl();
+
+    return true;
+}
+
+function clearShareParamsFromUrl() {
+    const url = new URL(window.location.href);
+
+    url.search = '';
+    url.hash = '';
+
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+}
+
+function selectShareUrlInput() {
+    const input = document.getElementById('shareUrlInput');
+    const url = input.value;
+
+    input.focus();
+
+    try {
+        input.select();
+        input.setSelectionRange(0, url.length);
+    } catch {
+        input.select();
+    }
+}
+
+function openShareDialog() {
+    const overlay = document.getElementById('shareOverlay');
+    const input = document.getElementById('shareUrlInput');
+    const copyBtn = document.getElementById('shareCopyBtn');
+
+    input.value = buildShareUrl();
+    copyBtn.textContent = 'Copy link';
+    copyBtn.classList.remove('copied');
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    requestAnimationFrame(() => {
+        selectShareUrlInput();
+    });
+
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
+function closeShareDialog() {
+    const overlay = document.getElementById('shareOverlay');
+
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+}
+
+async function copyShareUrl() {
+    const input = document.getElementById('shareUrlInput');
+    const copyBtn = document.getElementById('shareCopyBtn');
+    const url = input.value;
+    let copied = false;
+
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(url);
+            copied = true;
+        } catch {
+            copied = false;
+        }
+    }
+
+    if (!copied) {
+        selectShareUrlInput();
+
+        try {
+            copied = document.execCommand('copy');
+        } catch {
+            copied = false;
+        }
+    }
+
+    if (copied) {
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+
+        if (navigator.vibrate) {
+            navigator.vibrate(10);
+        }
+    } else {
+        copyBtn.textContent = 'Select and copy';
+        copyBtn.classList.remove('copied');
+        selectShareUrlInput();
+    }
+}
+
+function setupShareProjection() {
+    document
+        .getElementById('shareProjectionBtn')
+        ?.addEventListener('click', openShareDialog);
+
+    document
+        .getElementById('shareCopyBtn')
+        ?.addEventListener('click', copyShareUrl);
+}
+
+const NOTICE_BANNER_STORAGE_KEY = 'noticeBannerState';
+const NOTICE_BANNER_MIN_DELAY_MS = 15000;
+const NOTICE_SNOOZE_DAYS = [7];
+
+let noticeBannerPageLoadTime = Date.now();
+let noticeBannerUserInteracted = false;
+let noticeBannerScheduled = false;
+let noticeBannerShown = false;
+let noticeBannerListenersActive = false;
+let noticeBannerWasSnoozed = false;
+let noticeBannerTimer = null;
+
+const noticeInteractionEvents = ['click', 'input', 'change', 'keydown'];
+
+function readNoticeBannerState() {
+    try {
+        const saved = localStorage.getItem(NOTICE_BANNER_STORAGE_KEY);
+
+        if (!saved) {
+            return { snoozeCount: 0, snoozeUntil: 0 };
+        }
+
+        const parsed = JSON.parse(saved);
+
+        return {
+            snoozeCount: parsed.snoozeCount || 0,
+            snoozeUntil: parsed.snoozeUntil || 0
+        };
+    } catch {
+        return { snoozeCount: 0, snoozeUntil: 0 };
+    }
+}
+
+function writeNoticeBannerState(updates) {
+    const state = {
+        ...readNoticeBannerState(),
+        ...updates
+    };
+
+    localStorage.setItem(
+        NOTICE_BANNER_STORAGE_KEY,
+        JSON.stringify(state)
+    );
+
+    return state;
+}
+
+function isNoticeBannerSnoozed() {
+    const { snoozeUntil } = readNoticeBannerState();
+
+    return snoozeUntil > 0 && Date.now() < snoozeUntil;
+}
+
+function getNoticeSnoozeUntil(snoozeCount) {
+    const index = Math.min(
+        Math.max(snoozeCount - 1, 0),
+        NOTICE_SNOOZE_DAYS.length - 1
+    );
+    const days = NOTICE_SNOOZE_DAYS[index];
+
+    return Date.now() + days * 24 * 60 * 60 * 1000;
+}
+
+function attachNoticeInteractionListeners() {
+    if (noticeBannerListenersActive) {
+        return;
+    }
+
+    noticeBannerListenersActive = true;
+
+    for (const eventName of noticeInteractionEvents) {
+        document.addEventListener(
+            eventName,
+            handleNoticeBannerInteraction,
+            true
+        );
+    }
+}
+
+function onNoticeSnoozeEnded() {
+    noticeBannerShown = false;
+    noticeBannerScheduled = false;
+    noticeBannerPageLoadTime = Date.now();
+    noticeBannerUserInteracted = false;
+
+    if (noticeBannerTimer !== null) {
+        clearTimeout(noticeBannerTimer);
+        noticeBannerTimer = null;
+    }
+
+    attachNoticeInteractionListeners();
+}
+
+function hideNoticeBanner() {
+    const banner = document.getElementById('noticeBanner');
+
+    if (!banner) {
+        return;
+    }
+
+    banner.classList.remove('notice-banner--visible');
+    banner.hidden = true;
+}
+
+function evaluateNoticeBannerSnooze() {
+    if (isNoticeBannerSnoozed()) {
+        noticeBannerWasSnoozed = true;
+        hideNoticeBanner();
+
+        if (noticeBannerTimer !== null) {
+            clearTimeout(noticeBannerTimer);
+            noticeBannerTimer = null;
+        }
+
+        noticeBannerScheduled = false;
+        removeNoticeInteractionListeners();
+        return;
+    }
+
+    const banner = document.getElementById('noticeBanner');
+    const bannerVisible =
+        banner &&
+        !banner.hidden &&
+        banner.classList.contains('notice-banner--visible');
+
+    if (bannerVisible || noticeBannerScheduled || noticeBannerTimer !== null) {
+        return;
+    }
+
+    if (noticeBannerWasSnoozed) {
+        noticeBannerWasSnoozed = false;
+        onNoticeSnoozeEnded();
+        return;
+    }
+
+    if (!noticeBannerListenersActive && !noticeBannerShown) {
+        onNoticeSnoozeEnded();
+    }
+}
+
+function getDisclaimerText() {
+    return (
+        document.getElementById('disclaimerInlineText')?.textContent.trim() ||
+        ''
+    );
+}
+
+function openDisclaimerModal() {
+    const overlay = document.getElementById('disclaimerOverlay');
+    const text = document.getElementById('disclaimerModalText');
+
+    text.textContent = getDisclaimerText();
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    overlay.querySelector('.privacy-close')?.focus();
+}
+
+function closeDisclaimerModal() {
+    const overlay = document.getElementById('disclaimerOverlay');
+
+    overlay.hidden = true;
+
+    if (
+        document.getElementById('shareOverlay').hidden &&
+        document.getElementById('privacyOverlay').hidden
+    ) {
+        document.body.style.overflow = '';
+    }
+}
+
+function showNoticeBanner() {
+    if (
+        noticeBannerShown ||
+        isNoticeBannerSnoozed() ||
+        !noticeBannerUserInteracted
+    ) {
+        return;
+    }
+
+    const banner = document.getElementById('noticeBanner');
+
+    noticeBannerShown = true;
+    banner.hidden = false;
+
+    requestAnimationFrame(() => {
+        banner.classList.add('notice-banner--visible');
+    });
+}
+
+function scheduleNoticeBanner() {
+    if (
+        noticeBannerScheduled ||
+        noticeBannerShown ||
+        isNoticeBannerSnoozed() ||
+        !noticeBannerUserInteracted
+    ) {
+        return;
+    }
+
+    noticeBannerScheduled = true;
+
+    const elapsed = Date.now() - noticeBannerPageLoadTime;
+    const remaining = Math.max(0, NOTICE_BANNER_MIN_DELAY_MS - elapsed);
+
+    noticeBannerTimer = window.setTimeout(() => {
+        noticeBannerTimer = null;
+        showNoticeBanner();
+    }, remaining);
+}
+
+function removeNoticeInteractionListeners() {
+    if (!noticeBannerListenersActive) {
+        return;
+    }
+
+    noticeBannerListenersActive = false;
+
+    for (const eventName of noticeInteractionEvents) {
+        document.removeEventListener(
+            eventName,
+            handleNoticeBannerInteraction,
+            true
+        );
+    }
+}
+
+function handleNoticeBannerInteraction() {
+    if (noticeBannerUserInteracted || isNoticeBannerSnoozed()) {
+        return;
+    }
+
+    noticeBannerUserInteracted = true;
+    removeNoticeInteractionListeners();
+    scheduleNoticeBanner();
+}
+
+function dismissNoticeBanner() {
+    const banner = document.getElementById('noticeBanner');
+
+    if (noticeBannerTimer !== null) {
+        clearTimeout(noticeBannerTimer);
+        noticeBannerTimer = null;
+    }
+
+    banner.classList.remove('notice-banner--visible');
+    banner.hidden = true;
+    noticeBannerShown = true;
+    noticeBannerScheduled = false;
+
+    const snoozeCount = readNoticeBannerState().snoozeCount + 1;
+
+    writeNoticeBannerState({
+        snoozeCount,
+        snoozeUntil: getNoticeSnoozeUntil(snoozeCount)
+    });
+
+    removeNoticeInteractionListeners();
+    evaluateNoticeBannerSnooze();
+}
+
+function setupNoticeBanner() {
+    if (localStorage.getItem('noticeBannerDismissed') === '1') {
+        writeNoticeBannerState({
+            snoozeCount: 1,
+            snoozeUntil: getNoticeSnoozeUntil(1)
+        });
+        localStorage.removeItem('noticeBannerDismissed');
+    }
+
+    document
+        .getElementById('noticeBannerOpen')
+        ?.addEventListener('click', openDisclaimerModal);
+
+    document
+        .getElementById('noticeBannerDismiss')
+        ?.addEventListener('click', dismissNoticeBanner);
+
+    evaluateNoticeBannerSnooze();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            evaluateNoticeBannerSnooze();
+        }
+    });
+
+    window.addEventListener('pageshow', evaluateNoticeBannerSnooze);
+}
+
 function loadLogEntry(id) {
     const item = getLog().find(entry => itemId(entry) === id);
 
@@ -4377,10 +5260,21 @@ function closePrivacyPolicy() {
 }
 
 document.addEventListener('keydown', event => {
-    if (
-        event.key === 'Escape' &&
-        !document.getElementById('privacyOverlay').hidden
-    ) {
+    if (event.key !== 'Escape') {
+        return;
+    }
+
+    if (!document.getElementById('disclaimerOverlay').hidden) {
+        closeDisclaimerModal();
+        return;
+    }
+
+    if (!document.getElementById('shareOverlay').hidden) {
+        closeShareDialog();
+        return;
+    }
+
+    if (!document.getElementById('privacyOverlay').hidden) {
         closePrivacyPolicy();
     }
 });
@@ -4718,6 +5612,7 @@ const INSTALL_ICONS = {
 let deferredInstallPrompt = null;
 let installPromptPageOpenedAt = Date.now();
 let installPromptServiceWorkerReady = false;
+let installPromptWasSnoozed = false;
 let installPromptShowTimer = null;
 
 function isStandaloneDisplay() {
@@ -4849,7 +5744,9 @@ function writeInstallPromptState(updates) {
 }
 
 function isInstallPromptSnoozed() {
-    return Date.now() < readInstallPromptState().snoozeUntil;
+    const { snoozeUntil } = readInstallPromptState();
+
+    return snoozeUntil > 0 && Date.now() < snoozeUntil;
 }
 
 function getInstallSnoozeUntil(snoozeCount) {
@@ -4860,6 +5757,38 @@ function getInstallSnoozeUntil(snoozeCount) {
     const days = INSTALL_SNOOZE_DAYS[index];
 
     return Date.now() + days * 24 * 60 * 60 * 1000;
+}
+
+function evaluateInstallPromptSnooze() {
+    if (!isMobileBrowser()) {
+        return;
+    }
+
+    if (isInstallPromptSnoozed()) {
+        installPromptWasSnoozed = true;
+        hideInstallBanner();
+
+        if (installPromptShowTimer !== null) {
+            clearTimeout(installPromptShowTimer);
+            installPromptShowTimer = null;
+        }
+
+        return;
+    }
+
+    const banner = document.getElementById('installBanner');
+    const bannerVisible = banner && !banner.hidden;
+
+    if (bannerVisible || installPromptShowTimer !== null) {
+        return;
+    }
+
+    if (installPromptWasSnoozed) {
+        installPromptWasSnoozed = false;
+        installPromptPageOpenedAt = Date.now();
+    }
+
+    scheduleInstallPromptShow();
 }
 
 function isUpdateBannerVisible() {
@@ -5000,6 +5929,7 @@ function snoozeInstallPrompt() {
 
     hideInstallBanner();
     closeInstallModal();
+    evaluateInstallPromptSnooze();
 }
 
 function markInstallPromptComplete() {
@@ -5291,7 +6221,6 @@ async function handleInstallRequest() {
 
 function setupMobileInstallPrompt() {
     updateInstallTileVisibility();
-    scheduleInstallPromptShow();
 
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready
@@ -5318,6 +6247,16 @@ function setupMobileInstallPrompt() {
     document
         .getElementById('installBannerSnooze')
         ?.addEventListener('click', snoozeInstallPrompt);
+
+    evaluateInstallPromptSnooze();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            evaluateInstallPromptSnooze();
+        }
+    });
+
+    window.addEventListener('pageshow', evaluateInstallPromptSnooze);
 }
 
 function setupDesktopInstallPrompt() {
@@ -5460,7 +6399,10 @@ setupNumberInputSteppers();
 setupChartHover();
 setupServiceWorkerUpdates();
 setupInstallPrompt();
+setupShareProjection();
+setupNoticeBanner();
 loadSettings();
+applyShareParamsFromUrl();
 applyTheme();
 calculate();
 renderLog();
