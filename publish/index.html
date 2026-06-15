@@ -3679,6 +3679,88 @@ function drawChart(
     updateChartHover(null);
 }
 
+function roundProjectionValue(value) {
+    return Math.round(value);
+}
+
+function buildHorizonResult(years, amount, assetRate, altRate, inflation) {
+    const assetNominal = futureValueNominal(amount, assetRate, years);
+    const altNominal = futureValueNominal(amount, altRate, years);
+    const assetReal = futureValue(amount, assetRate, inflation, years);
+    const altReal = futureValue(amount, altRate, inflation, years);
+
+    return {
+        years,
+        asset: {
+            nominal: roundProjectionValue(assetNominal),
+            real: roundProjectionValue(assetReal)
+        },
+        alternative: {
+            nominal: roundProjectionValue(altNominal),
+            real: roundProjectionValue(altReal)
+        },
+        opportunityCost: {
+            nominal: roundProjectionValue(altNominal - assetNominal),
+            real: roundProjectionValue(altReal - assetReal)
+        }
+    };
+}
+
+function updateProjectionExport() {
+    const target = document.getElementById('opportunity-cost-projection');
+
+    if (!target) {
+        return;
+    }
+
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    const assetRate =
+        (parseFloat(document.getElementById('assetReturnRate').value) || 0) /
+        100;
+    const altRate =
+        (parseFloat(document.getElementById('returnRate').value) || 0) / 100;
+    const inflation =
+        (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
+    const currentAge = getCurrentAge();
+    const retirementAge = getRetirementAge();
+    const yearsToRetirement = retirementAge - currentAge;
+    const snapshot = captureSettingsSnapshot();
+
+    const payload = {
+        type: 'OpportunityCostProjection',
+        appVersion: getAppVersion(),
+        computedAt: new Date().toISOString(),
+        inputs: {
+            amount,
+            ...snapshot
+        },
+        rates: {
+            assetAnnual: assetRate,
+            alternativeAnnual: altRate,
+            inflationAnnual: inflation
+        },
+        displayMode,
+        horizons: [5, 10, 20, 30, 50].map(years =>
+            buildHorizonResult(years, amount, assetRate, altRate, inflation)
+        ),
+        retirement: {
+            ...buildHorizonResult(
+                yearsToRetirement,
+                amount,
+                assetRate,
+                altRate,
+                inflation
+            ),
+            currentAge,
+            retirementAge,
+            yearsToRetirement
+        },
+        shareUrl: buildShareUrl()
+    };
+
+    target.textContent = JSON.stringify(payload);
+}
+
 function calculate() {
     const amount =
         parseFloat(document.getElementById('amount').value) || 0;
@@ -3767,6 +3849,7 @@ function calculate() {
         yearsToRetirement
     );
 
+    updateProjectionExport();
     scheduleSaveSettings();
 }
 
@@ -4055,8 +4138,18 @@ function clampAge(value, min, max, fallback) {
 }
 
 function getCurrentAge() {
+    const currentInput = document.getElementById('currentAge');
+    const raw = currentInput.value;
+
+    if (
+        currentInput === document.activeElement &&
+        (raw.trim() === '' || !Number.isFinite(parseFloat(raw)))
+    ) {
+        return DEFAULT_CURRENT_AGE;
+    }
+
     return clampAge(
-        document.getElementById('currentAge').value,
+        raw,
         MIN_CURRENT_AGE,
         MAX_AGE,
         DEFAULT_CURRENT_AGE
@@ -4064,15 +4157,23 @@ function getCurrentAge() {
 }
 
 function getRetirementAge() {
+    const retirementInput = document.getElementById('retirementAge');
     const currentAge = getCurrentAge();
     const fallback = Math.max(DEFAULT_RETIREMENT_AGE, currentAge);
+    const raw = retirementInput.value;
+    const parsed = parseFloat(raw);
 
-    return clampAge(
-        document.getElementById('retirementAge').value,
-        currentAge,
-        MAX_AGE,
-        fallback
-    );
+    if (
+        retirementInput === document.activeElement &&
+        (raw.trim() === '' ||
+            !Number.isFinite(parsed) ||
+            parsed < currentAge ||
+            parsed > MAX_AGE)
+    ) {
+        return fallback;
+    }
+
+    return clampAge(raw, currentAge, MAX_AGE, fallback);
 }
 
 function syncAgeInputs() {
@@ -4083,26 +4184,30 @@ function syncAgeInputs() {
     currentInput.max = String(MAX_AGE);
     retirementInput.max = String(MAX_AGE);
 
-    const currentRaw = currentInput.value.trim();
-    const currentParsed = parseFloat(currentRaw);
-    let currentAge = getCurrentAge();
+    const currentAge = getCurrentAge();
+    retirementInput.min = String(currentAge);
 
-    if (currentRaw !== '' && Number.isFinite(currentParsed)) {
-        if (currentAge !== currentParsed) {
-            currentInput.value = String(currentAge);
+    if (currentInput !== document.activeElement) {
+        const currentRaw = currentInput.value.trim();
+        const currentParsed = parseFloat(currentRaw);
+
+        if (currentRaw !== '' && Number.isFinite(currentParsed)) {
+            if (currentAge !== currentParsed) {
+                currentInput.value = String(currentAge);
+            }
         }
     }
 
-    retirementInput.min = String(currentAge);
+    if (retirementInput !== document.activeElement) {
+        const retirementRaw = retirementInput.value.trim();
+        const retirementParsed = parseFloat(retirementRaw);
 
-    const retirementRaw = retirementInput.value.trim();
-    const retirementParsed = parseFloat(retirementRaw);
+        if (retirementRaw !== '' && Number.isFinite(retirementParsed)) {
+            const retirementAge = getRetirementAge();
 
-    if (retirementRaw !== '' && Number.isFinite(retirementParsed)) {
-        const retirementAge = getRetirementAge();
-
-        if (retirementAge !== retirementParsed) {
-            retirementInput.value = String(retirementAge);
+            if (retirementAge !== retirementParsed) {
+                retirementInput.value = String(retirementAge);
+            }
         }
     }
 }
@@ -6407,6 +6512,11 @@ applyTheme();
 calculate();
 renderLog();
 </script>
+
+<script
+    type="application/json"
+    id="opportunity-cost-projection"
+></script>
 
 </body>
 </html>
